@@ -22,9 +22,10 @@ class Element():
         return all(c in "0123456789.+-" for c in EquationPart)
 
     def isComplexe(self, EquationPart):
-        """Retourne vrai si EquationPart est numeric"""
+        """Retourne vrai si EquationPart est un nbr complexe"""
         cptI = 0
         cptOP = 0
+        state = 0
         if len(EquationPart) == 1:
             return False
         for i in EquationPart:
@@ -32,9 +33,12 @@ class Element():
                 cptI += 1
             elif i == '+' or i == '-':
                 cptOP += 1
+                state = 0
+            elif i.isnumeric():
+                state = 1
             if not( i == 'i' or i in "0123456789.+-" or i == '-' or i == '+' or i == ' '):
                 return False
-        if not (cptOP == 1 and cptI == 1):
+        if not (cptOP <= 2 and cptI == 1 and state == 1):
             return False
         return True
 
@@ -123,9 +127,31 @@ def FixList(equation):
         elif ']' in element:
             InsertPart(equation, element, i)
         elif 'i' in element:
-            CreateImaginaire(equation, element, i)
+            GetComplexe(equation, element, i)
+    for i, element in enumerate(equation):
+        if '[' in element:
+            GetMatrice(equation, element, i)
 
-def CreateImaginaire(equation, element, i):
+def GetMatrice(equation, element, i):
+    end = 1
+    tmp = ""
+    while end:
+        if tmp == "":
+            end = 0
+        if i >= len(equation):
+            break
+        if equation[i] == ']':
+            end -= 1
+        elif equation[i] == '[':
+            end += 1
+        tmp += equation[i]
+        del equation[i]
+        if end == 0:
+            break
+    equation.insert(i, tmp)
+
+def GetComplexe(equation, element, i):
+    """ Construit un nombre complexe """
     tmp = ""
     if i == 0:
         print("Invalid input with imaginary number")
@@ -142,6 +168,9 @@ def CreateImaginaire(equation, element, i):
         tmp += equation[i]
         del equation[i - 1]
         del equation[i - 1]
+        if i - 2 >= 0 and (equation[i - 2] == '-' or equation[i - 2] == '+'):
+            tmp = equation[i - 2] + tmp
+            del equation[i - 2]
     elif equation[i - 2].isnumeric() and i + 2 < len(equation):
         ins = i - 2
         tmp += equation[i - 2]
@@ -156,6 +185,9 @@ def CreateImaginaire(equation, element, i):
         tmp += equation[i - 1]
         del equation[i - 1]
         del equation[i - 2]
+        if i - 3 >= 0 and (equation[i - 3] == '-' or equation[i - 3] == '+'):
+            tmp = equation[i - 3] + tmp
+            del equation[i - 3]
     else:
         print("Invalid input with imaginary number")
         return
