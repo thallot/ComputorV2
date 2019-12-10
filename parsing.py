@@ -21,6 +21,23 @@ class Element():
             return False
         return all(c in "0123456789.+-" for c in EquationPart)
 
+    def isComplexe(self, EquationPart):
+        """Retourne vrai si EquationPart est numeric"""
+        cptI = 0
+        cptOP = 0
+        if len(EquationPart) == 1:
+            return False
+        for i in EquationPart:
+            if i == 'i':
+                cptI += 1
+            elif i == '+' or i == '-':
+                cptOP += 1
+            if not( i == 'i' or i in "0123456789.+-" or i == '-' or i == '+' or i == ' '):
+                return False
+        if not (cptOP == 1 and cptI == 1):
+            return False
+        return True
+
     def GetType(self, EquationPart):
         """ Retourne le type de EquationPart """
         type = "?"
@@ -31,15 +48,25 @@ class Element():
                 type = 'INT'
         else:
             if EquationPart == '(':
-                type = 'BEGIN'
+                type = 'BEGIN_P'
             elif EquationPart == ')':
-                type = 'END'
+                type = 'END_P'
+            elif EquationPart == '[':
+                type = 'BEGIN_C'
+            elif EquationPart == ']':
+                type = 'END_C'
+            elif EquationPart == ',':
+                type = 'SEP_NBR'
+            elif EquationPart == ';':
+                type = 'SEP_MATRICE'
             elif IsOperator(EquationPart):
                 type = 'OP'
-            elif '(' and ')' in EquationPart:
+            elif '(' and ')' in EquationPart and len(EquationPart) > 3:
                 type = 'FUNCTION'
-            elif EquationPart.isalpha():
+            elif EquationPart.isalpha() and not 'i' in EquationPart:
                 type = 'VAR'
+            elif self.isComplexe(EquationPart):
+                type = 'IMGN'
         return type
 
     def GetValue(self, EquationPart):
@@ -88,12 +115,52 @@ def FixList(equation):
         if equation[i] == '*' and equation[i + 1] == '*':
             equation[i] = '**'
             del equation[i + 1]
-        if '(' in element:
+        elif '(' in element:
             if not ')' in element:
                 InsertPart(equation, element, i)
-        if ')' in element:
-            if not '(' in element:
-                InsertPart(equation, element, i)
+        elif '[' in element:
+            InsertPart(equation, element, i)
+        elif ']' in element:
+            InsertPart(equation, element, i)
+        elif 'i' in element:
+            CreateImaginaire(equation, element, i)
+
+def CreateImaginaire(equation, element, i):
+    tmp = ""
+    if i == 0:
+        print("Invalid input with imaginary number")
+        return
+    elif equation[i - 1].isnumeric() and i + 2 < len(equation):
+        ins = i - 1
+        tmp += equation[i - 1]
+        tmp += equation[i]
+        del equation[i]
+        del equation[i - 1]
+        tmp += ' '
+        tmp += equation[i - 1]
+        tmp += ' '
+        tmp += equation[i]
+        del equation[i - 1]
+        del equation[i - 1]
+    elif equation[i - 2].isnumeric() and i + 2 < len(equation):
+        ins = i - 2
+        tmp += equation[i - 2]
+        tmp += equation[i - 1]
+        tmp += equation[i]
+        del equation[i]
+        del equation[i - 1]
+        del equation[i - 2]
+        tmp += ' '
+        tmp += equation[i - 2]
+        tmp += ' '
+        tmp += equation[i - 1]
+        del equation[i - 1]
+        del equation[i - 2]
+    else:
+        print("Invalid input with imaginary number")
+        return
+    tmp = tmp.replace('*', '', 1)
+    equation.insert(ins, tmp)
 
 def CreateList(string):
     """ Crée une liste à partir d'une string """
@@ -118,30 +185,34 @@ def CreateList(string):
     CleanBuffer(nb, str, equation)
     CleanList(equation)
     FixList(equation)
-    return equation
+    error = CheckError(equation)
+    return equation, error
 
 def CheckError(list):
     """ Check les erreur potentiel dans l'input """
-    begin = 0
-    end = 0
+    begin = [0, 0]
+    end = [0, 0]
     for element in list:
-        if element.type == '?':
-            print('Wrong input', element.value)
-            return 1
-        elif element.value == '(':
-            begin += 1
-        elif element.value == ')':
-            end += 1
-    if end != begin:
-        print("Missing bracket")
+        if element == '(':
+            begin[0] += 1
+        elif element == ')':
+            end[0] += 1
+        elif element == '[':
+            begin[1] += 1
+        elif element == ']':
+            end[1] += 1
+    if end[0] != begin[0]:
+        print("Missing bracket : ()\n")
+        return 1
+    if end[1] != begin[1]:
+        print("Missing bracket : []\n")
         return 1
     return 0
 
 def CreateElementList(str):
     """ Crée une liste d'élement à partir de l'input """
     list = []
-    equation = CreateList(str)
+    equation, error = CreateList(str)
     for element in equation:
         list.append(Element(element))
-    error = CheckError(list)
     return list, error
