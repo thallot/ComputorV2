@@ -1,0 +1,138 @@
+def IsOperator(element):
+    """ Retourne 1 si l'élément est un opérateur """
+    if element == '*' or element == '^' or element == '+' or element == '-'\
+    or element == '%' or element == '/' or element == '=' or element == '?' \
+    or element == '**':
+        return 1
+    return 0
+
+def CleanBuffer(nb, str, equation):
+    """ Ajoute le contenue du buffer a la liste équation s'il n'est pas vide """
+    if not nb == "":
+        equation.append(nb.strip())
+        nb = ""
+    if not str == "":
+        equation.append(str.strip())
+        str = ""
+    return nb, str
+
+def CleanList(equation):
+    """ Supprimes les élements vide et les espaces de l'équation """
+    while ' ' in equation:
+        del equation[equation.index(' ')]
+    while '' in equation:
+        del equation[equation.index('')]
+
+def InsertPart(equation, element, i):
+    """ Decoupe une str en liste et l'insere dans equation """
+    tmp = list(element)
+    del equation[i]
+    for part in tmp:
+        equation.insert(i, part)
+        i += 1
+
+def FixList(equation):
+    """ Découpe les str invalide et regroupe des caracteres pour former des élément cohérent """
+    for i, element in enumerate(equation):
+        if equation[i] == '*' and equation[i + 1] == '*':
+            equation[i] = '**'
+            del equation[i + 1]
+        elif '(' in element:
+            if not ')' in element:
+                InsertPart(equation, element, i)
+        elif '[' in element:
+            InsertPart(equation, element, i)
+        elif ']' in element:
+            InsertPart(equation, element, i)
+        elif 'i' in element:
+            GetComplexe(equation, element, i)
+    for i, element in enumerate(equation):
+        if '[' in element:
+            GetMatrice(equation, element, i)
+
+def GetMatrice(equation, element, i):
+    """ Regroupe tous les caracteres d'une matrice """
+    end = 1
+    tmp = ""
+    while end:
+        if tmp == "":
+            end = 0
+        if i >= len(equation):
+            break
+        if equation[i] == ']':
+            end -= 1
+        elif equation[i] == '[':
+            end += 1
+        tmp += equation[i]
+        del equation[i]
+        if end == 0:
+            break
+    equation.insert(i, tmp)
+
+def GetComplexe(equation, element, i):
+    """ Genere un complexe """
+    tmp = ""
+    if i == 0 or i >= len(equation) - 2:
+        return
+    if equation[i - 1] == '*':
+        del equation[i - 1]
+        i -= 1
+    if i > 1 and (equation[i - 2] == '-' or equation[i - 2] == '+'):
+        tmp += equation[i - 2]
+        del equation[i - 2]
+        i -= 1
+    i -= 1
+    j = k = i
+    for i in range(i, i + 4):
+        tmp += equation[i]
+    for j in range(j, j + 4):
+        del equation[k]
+    equation.insert(k, tmp)
+
+def CheckError(list):
+    """ Check les erreur potentiel dans l'input """
+    begin = [0, 0]
+    end = [0, 0]
+    for element in list:
+        if element == '(':
+            begin[0] += 1
+        elif element == ')':
+            end[0] += 1
+        elif element == '[':
+            begin[1] += 1
+        elif element == ']':
+            end[1] += 1
+    if end[0] != begin[0]:
+        print("Missing bracket : ()\n")
+        return 1
+    if end[1] != begin[1]:
+        print("Missing bracket : []\n")
+        return 1
+    return 0
+
+def Lexeur(string):
+    """ Crée une liste (de lexeur) à partir d'une string """
+    equation = []
+    nb = ""
+    str = ""
+    split = list(string)
+    for i, element in enumerate(split):
+        if IsOperator(element):
+            nb, str = CleanBuffer(nb, str, equation)
+            equation.append(element)
+        elif element.isnumeric() or element == '.':
+            nb += element
+            if not str == "":
+                equation.append(str.strip())
+                str = ""
+        elif not element == " ":
+            str += element
+            if not nb == "":
+                equation.append(nb.strip())
+                nb = ""
+    CleanBuffer(nb, str, equation)
+    CleanList(equation)
+    FixList(equation)
+    error = CheckError(equation)
+    print(equation)
+    return equation, error

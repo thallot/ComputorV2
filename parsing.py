@@ -1,250 +1,113 @@
+from lexeur import *
+import re
+
 class Element():
     """Element de l'équation"""
-    def __init__(self, EquationPart):
-        self.type = self.GetType(EquationPart)
-        self.value = self.GetValue(EquationPart)
+    def __init__(self, type, value):
+        self.type = type
+        self.value = value
 
     def __repr__(self):
         return ('Type {} | value {}\n' .format(self.type, self.value))
 
-    def isnbr(self, EquationPart):
-        """Retourne vrai si EquationPart est numeric"""
-        c = 0
-        if len(EquationPart) == 1:
-            return False
-        for i in EquationPart:
-            if i=='.':
-                c += 1
-            else :
-                pass
-        if c > 1:
-            return False
-        return all(c in "0123456789.+-" for c in EquationPart)
 
-    def isComplexe(self, EquationPart):
-        """Retourne vrai si EquationPart est un nbr complexe"""
-        cptI = 0
-        cptOP = 0
-        state = 0
-        if len(EquationPart) == 1:
+def isNbr(str):
+    """Retourne vrai si str est numeric"""
+    dot = str.count('.')
+    if dot > 1:
+        return False
+    return all(c in "0123456789." for c in str)
+
+def isComplexe(str):
+    """Retourne vrai si str est un nbr complexe"""
+    cptI = str.count('i')
+    cptOP = str.count('+')
+    state = 0
+    if len(str) == 1:
+        return False
+    for i in str:
+        if i.isnumeric():
+            state = 1
+        if not i in "0123456789.+-i ":
             return False
-        for i in EquationPart:
-            if i == 'i':
-                cptI += 1
-            elif i == '+' or i == '-':
-                cptOP += 1
-                state = 0
-            elif i.isnumeric():
-                state = 1
-            if not( i == 'i' or i in "0123456789.+-" or i == '-' or i == '+' or i == ' '):
+    if not (cptOP <= 2 and cptI == 1 and state == 1):
+        return False
+    return True
+
+def isMatrice(str):
+    """ Vérifie que la matrice soit bien formaté """
+    open = str.count('[')
+    close = str.count(']')
+    sep = str.count(';')
+    if not (open == close and open >= 2 and sep == open - 2):
+        return False
+    if not (str[0] == '[' and str[len(str) - 1] == ']'):
+        return False
+    tmp = str[1:len(str)-1:1]
+    element = tmp.split(';')
+    nbElem = []
+    for line in element:
+        if not (line[0] == '[' and line[len(line) - 1] == ']'):
+            return False
+        for c in line:
+            if not (c.isnumeric() or c in '[,]'):
                 return False
-        if not (cptOP <= 2 and cptI == 1 and state == 1):
-            return False
-        return True
+        nbElem.append(len(re.findall('\d+', line)))
+    if not (len(set(nbElem))) == 1:
+        return False
+    return True
 
-    def GetType(self, EquationPart):
-        """ Retourne le type de EquationPart """
-        type = "?"
-        if EquationPart.isnumeric() or self.isnbr(EquationPart):
-            if isinstance(eval(EquationPart), float):
-                type = 'FLOAT'
-            elif isinstance(eval(EquationPart), int):
-                type = 'INT'
-        else:
-            if EquationPart == '(':
-                type = 'BEGIN_P'
-            elif EquationPart == ')':
-                type = 'END_P'
-            elif EquationPart == '[':
-                type = 'BEGIN_C'
-            elif EquationPart == ']':
-                type = 'END_C'
-            elif EquationPart == ',':
-                type = 'SEP_NBR'
-            elif EquationPart == ';':
-                type = 'SEP_MATRICE'
-            elif IsOperator(EquationPart):
-                type = 'OP'
-            elif '(' and ')' in EquationPart and len(EquationPart) > 3:
-                type = 'FUNCTION'
-            elif EquationPart.isalpha() and not 'i' in EquationPart:
-                type = 'VAR'
-            elif self.isComplexe(EquationPart):
-                type = 'IMGN'
-        return type
-
-    def GetValue(self, EquationPart):
-        """ Retourne la valeur d'un numeric """
-        if self.type == 'INT':
-            return int(eval(EquationPart))
-        elif self.type == 'FLOAT':
-            return float(eval(EquationPart))
-        else:
-            return EquationPart
-
-def IsOperator(element):
-    """ Retourne 1 si l'élément est un opérateur """
-    if element == '*' or element == '^' or element == '+' or element == '-'\
-    or element == '%' or element == '/' or element == '=' or element == '?' \
-    or element == '**':
-        return 1
-    return 0
-
-def CleanBuffer(nb, str, equation):
-    """ Ajoute le contenue du buffer a la liste équation s'il n'est pas vide """
-    if not nb == "":
-        equation.append(nb.strip())
-        nb = ""
-    if not str == "":
-        equation.append(str.strip())
-        str = ""
-    return nb, str
-
-def CleanList(equation):
-    """ Supprimes les élements vide et les espaces de l'équation """
-    while ' ' in equation:
-        del equation[equation.index(' ')]
-    while '' in equation:
-        del equation[equation.index('')]
-
-def InsertPart(equation, element, i):
-    tmp = list(element)
-    del equation[i]
-    for part in tmp:
-        equation.insert(i, part)
-        i += 1
-
-def FixList(equation):
-    for i, element in enumerate(equation):
-        if equation[i] == '*' and equation[i + 1] == '*':
-            equation[i] = '**'
-            del equation[i + 1]
-        elif '(' in element:
-            if not ')' in element:
-                InsertPart(equation, element, i)
-        elif '[' in element:
-            InsertPart(equation, element, i)
-        elif ']' in element:
-            InsertPart(equation, element, i)
-        elif 'i' in element:
-            GetComplexe(equation, element, i)
-    for i, element in enumerate(equation):
-        if '[' in element:
-            GetMatrice(equation, element, i)
-
-def GetMatrice(equation, element, i):
-    end = 1
-    tmp = ""
-    while end:
-        if tmp == "":
-            end = 0
-        if i >= len(equation):
-            break
-        if equation[i] == ']':
-            end -= 1
-        elif equation[i] == '[':
-            end += 1
-        tmp += equation[i]
-        del equation[i]
-        if end == 0:
-            break
-    equation.insert(i, tmp)
-
-def GetComplexe(equation, element, i):
-    """ Construit un nombre complexe """
-    tmp = ""
-    if i == 0:
-        print("Invalid input with imaginary number")
-        return
-    elif equation[i - 1].isnumeric() and i + 2 < len(equation):
-        ins = i - 1
-        tmp += equation[i - 1]
-        tmp += equation[i]
-        del equation[i]
-        del equation[i - 1]
-        tmp += ' '
-        tmp += equation[i - 1]
-        tmp += ' '
-        tmp += equation[i]
-        del equation[i - 1]
-        del equation[i - 1]
-        if i - 2 >= 0 and (equation[i - 2] == '-' or equation[i - 2] == '+'):
-            tmp = equation[i - 2] + tmp
-            del equation[i - 2]
-    elif equation[i - 2].isnumeric() and i + 2 < len(equation):
-        ins = i - 2
-        tmp += equation[i - 2]
-        tmp += equation[i - 1]
-        tmp += equation[i]
-        del equation[i]
-        del equation[i - 1]
-        del equation[i - 2]
-        tmp += ' '
-        tmp += equation[i - 2]
-        tmp += ' '
-        tmp += equation[i - 1]
-        del equation[i - 1]
-        del equation[i - 2]
-        if i - 3 >= 0 and (equation[i - 3] == '-' or equation[i - 3] == '+'):
-            tmp = equation[i - 3] + tmp
-            del equation[i - 3]
+def GetType(str):
+    """ Retourne le type de str """
+    type = "?"
+    if str.isnumeric() or isNbr(str):
+        if isinstance(eval(str), float):
+            type = 'FLOAT'
+        elif isinstance(eval(str), int):
+            type = 'INT'
     else:
-        print("Invalid input with imaginary number")
-        return
-    tmp = tmp.replace('*', '', 1)
-    equation.insert(ins, tmp)
+        if str == '(':
+            type = 'BEGIN_P'
+        elif str == ')':
+            type = 'END_P'
+        elif str == '[':
+            type = 'BEGIN_C'
+        elif str == ']':
+            type = 'END_C'
+        elif str == ',':
+            type = 'SEP_NBR'
+        elif str == ';':
+            type = 'SEP_MATRICE'
+        elif IsOperator(str):
+            type = 'OP'
+        elif '(' and ')' in str and len(str) > 3:
+            type = 'FUNCTION'
+        elif str.isalpha() and not 'i' in str:
+            type = 'VAR'
+        elif isComplexe(str):
+            type = 'COMPLEXE'
+        elif isMatrice(str):
+            type = 'MATRICE'
+    return type
 
-def CreateList(string):
-    """ Crée une liste à partir d'une string """
-    equation = []
-    nb = ""
-    str = ""
-    split = list(string)
-    for i, element in enumerate(split):
-        if IsOperator(element):
-            nb, str = CleanBuffer(nb, str, equation)
-            equation.append(element)
-        elif element.isnumeric() or element == '.':
-            nb += element
-            if not str == "":
-                equation.append(str.strip())
-                str = ""
-        elif not element == " ":
-            str += element
-            if not nb == "":
-                equation.append(nb.strip())
-                nb = ""
-    CleanBuffer(nb, str, equation)
-    CleanList(equation)
-    FixList(equation)
-    error = CheckError(equation)
-    return equation, error
+def GetValue(str, type):
+    """ Retourne la valeur d'un numeric """
+    if type == 'INT':
+        return int(eval(str))
+    elif type == 'FLOAT':
+        return float(eval(str))
+    else:
+        return str
 
-def CheckError(list):
-    """ Check les erreur potentiel dans l'input """
-    begin = [0, 0]
-    end = [0, 0]
-    for element in list:
-        if element == '(':
-            begin[0] += 1
-        elif element == ')':
-            end[0] += 1
-        elif element == '[':
-            begin[1] += 1
-        elif element == ']':
-            end[1] += 1
-    if end[0] != begin[0]:
-        print("Missing bracket : ()\n")
-        return 1
-    if end[1] != begin[1]:
-        print("Missing bracket : []\n")
-        return 1
-    return 0
 
 def CreateElementList(str):
     """ Crée une liste d'élement à partir de l'input """
     list = []
-    equation, error = CreateList(str)
+    equation, error = Lexeur(str)
     for element in equation:
-        list.append(Element(element))
+        type = GetType(element)
+        value = GetValue(element, type)
+        list.append(Element(type, value))
+        if type == '?':
+            error = 1
     return list, error
