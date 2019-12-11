@@ -77,7 +77,7 @@ def GetComplexe(equation, element, i):
     if equation[i - 1] == '*':
         del equation[i - 1]
         i -= 1
-    if i > 1 and (equation[i - 2] == '-' or equation[i - 2] == '+'):
+    if i > 1 and (equation[i - 2] == '-'):
         tmp += equation[i - 2]
         del equation[i - 2]
         i -= 1
@@ -110,12 +110,26 @@ def CheckError(list):
         return 1
     return 0
 
+def CheckErrorString(string):
+    error_value = ""
+    error = 0
+    if string.count('=') >= 2:
+        error_value = 'Too much ='
+        error = 1
+    if string.count('(') != string.count(')'):
+        error_value = 'Missing ()'
+        error = 1
+    return error, error_value
+
 def Lexeur(string):
     """ Crée une liste (de lexeur) à partir d'une string """
     equation = []
     nb = ""
     str = ""
     split = list(string)
+    error, error_value = CheckErrorString(string)
+    if error:
+        return equation, error, error_value
     for i, element in enumerate(split):
         if IsOperator(element):
             nb, str = CleanBuffer(nb, str, equation)
@@ -134,5 +148,4 @@ def Lexeur(string):
     CleanList(equation)
     FixList(equation)
     error = CheckError(equation)
-    print(equation)
-    return equation, error
+    return equation, error, error_value

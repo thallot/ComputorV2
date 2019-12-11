@@ -8,7 +8,7 @@ class Element():
         self.value = value
 
     def __repr__(self):
-        return ('Type {} | value {}\n' .format(self.type, self.value))
+        return ('Type {} | value {}' .format(self.type, self.value))
 
 
 def isNbr(str):
@@ -100,14 +100,26 @@ def GetValue(str, type):
         return str
 
 
-def CreateElementList(str):
+def Parser(string):
     """ Crée une liste d'élement à partir de l'input """
     list = []
-    equation, error = Lexeur(str)
-    for element in equation:
+    equation, error, error_value = Lexeur(string)
+    strEqu = ""
+    if error:
+        return strEqu, list, error, error_value
+    for i, element in enumerate(equation):
         type = GetType(element)
         value = GetValue(element, type)
         list.append(Element(type, value))
-        if type == '?':
+        tmp = GetType(equation[i - 1])
+        strEqu += " " + str(value)
+        if type == 'OP' and tmp == 'OP':
+            if value == '-' and equation[i - 1] == '+':
+                del list[i - 1]
+            elif not (value == '-' or value == '?'):
+                error = 1
+                error_value = 'Double operator'
+        elif type == '?':
             error = 1
-    return list, error
+            error_value = value
+    return strEqu, list, error, error_value
