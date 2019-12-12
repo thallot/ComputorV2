@@ -1,4 +1,6 @@
 from lexeur import *
+from functionmanage import *
+from varmanage import *
 import re
 
 class Element():
@@ -62,6 +64,19 @@ def isMatrice(str):
         return False
     return True
 
+def isFunction(str):
+    if len(str) <= 3:
+        return False
+    if not (str.count('(') == 1 and str.count(')') == 1):
+        return False
+    for c in str:
+        if c.isnumeric():
+            return False
+    tmp = re.search('(\((.*?)\))', str)
+    if len(tmp.group(0)) < 3:
+        return False
+    return True
+
 def GetType(str):
     """ Retourne le type de str """
     type = "?"
@@ -85,7 +100,7 @@ def GetType(str):
             type = 'SEP_MATRICE'
         elif IsOperator(str):
             type = 'OP'
-        elif '(' and ')' in str and len(str) > 3:
+        elif isFunction(str):
             type = 'FUNCTION'
         elif str.isalpha() and not 'i' in str:
             type = 'VAR'
@@ -118,7 +133,7 @@ def checkErrorParsing(value, type, equation, i, error, error_value):
     return error, error_value
 
 def Parser(string):
-    """ Cree une liste d'élement à partir de l'input """
+    """ Cree une liste d'element a partir de l'input """
     list = []
     equation, error, error_value = Lexeur(string)
     if error:
@@ -130,3 +145,15 @@ def Parser(string):
         list.append(Element(type, value, operand))
         error, error_value = checkErrorParsing(value, type, equation, i, error, error_value)
     return list, error, error_value
+
+def detectFunction(funList, varList, list):
+    functionCall = ""
+    for i, token in enumerate(list):
+        if token.type == 'VAR':
+            exist, function = getFunctionInList(funList, token.value)
+            if exist and i + 4 <= len(list):
+                k = i
+                for i in range(0, 4):
+                    functionCall += str(list.pop(k).value)
+                funcall = Element('FUNCALL', functionCall, 0)
+                list.insert(i, funcall)

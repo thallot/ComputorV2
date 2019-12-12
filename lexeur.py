@@ -1,5 +1,5 @@
 def IsOperator(element):
-    """ Retourne 1 si l'élément est un opérateur """
+    """ Retourne 1 si l'element est un operateur """
     if element == '*' or element == '^' or element == '+' or element == '-'\
     or element == '%' or element == '/' or element == '=' or element == '?' \
     or element == '**':
@@ -7,7 +7,7 @@ def IsOperator(element):
     return 0
 
 def CleanBuffer(nb, str, equation):
-    """ Ajoute le contenue du buffer a la liste équation s'il n'est pas vide """
+    """ Ajoute le contenue du buffer a la liste equation s'il n'est pas vide """
     if not nb == "":
         equation.append(nb.strip())
         nb = ""
@@ -17,7 +17,7 @@ def CleanBuffer(nb, str, equation):
     return nb, str
 
 def CleanList(equation):
-    """ Supprimes les élements vide et les espaces de l'équation """
+    """ Supprimes les elements vide et les espaces de l'equation """
     while ' ' in equation:
         del equation[equation.index(' ')]
     while '' in equation:
@@ -32,7 +32,7 @@ def InsertPart(equation, element, i):
         i += 1
 
 def FixList(equation):
-    """ Découpe les str invalide et regroupe des caracteres pour former des élément cohérent """
+    """ Decoupe les str invalide et regroupe des caracteres pour former des elements coherent """
     for i, element in enumerate(equation):
         if equation[i] == '*' and equation[i + 1] == '*':
             equation[i] = '**'
@@ -104,7 +104,7 @@ def CheckError(string, equation):
     return error, error_value
 
 def Lexeur(string):
-    """ Crée une liste (de lexeur) à partir d'une string """
+    """ Cree une liste (de lexeur) a partir d'une string """
     equation = []
     nb = ""
     str = ""

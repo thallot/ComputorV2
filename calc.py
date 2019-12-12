@@ -1,36 +1,25 @@
 from parsing import *
+import varmanage
 
-def doCalc(list, start, end):
-    tmp = list[start:end]
-    print(tmp)
-    res = evaluate(tmp)
-    return res
-# expression where list are
-# separated by space.
-
-# Function to find precedence
-# of operators.
 def precedence(op):
-
+    """ Determine les priorite entre les operateur """
     if op == '+' or op == '-':
         return 1
-    if op == '*' or op == '/':
+    if op == '*' or op == '/' or op == '%' or op == '^':
         return 2
     return 0
 
-# Function to perform arithmetic
-# operations.
 def doOp(a, b, op):
-
+    """ retourne le result a OP b """
     if op == '+': return a + b
     if op == '-': return a - b
     if op == '*': return a * b
-    if op == '/': return a // b
+    if op == '/': return a / b
     if op == '^': return a ** b
+    if op == '%': return a % b
 
-# Function that returns value of
-# expression after evaluation.
-def evaluate(list):
+def evaluate(list, varList):
+    """ NPR Calc sur la liste du parser """
     values = []
     ops = []
     i = 0
@@ -39,6 +28,13 @@ def evaluate(list):
             ops.append(list[i].value)
         elif list[i].type == 'INT' or list[i].type == 'FLOAT':
             values.append(list[i].value)
+        elif list[i].type == 'VAR':
+            exist, var = varmanage.getVarInList(varList, list[i].value)
+            if exist and (var.type == 'INT' or var.type == 'FLOAT'):
+                values.append(var.value)
+            else:
+                print('La variable {} n\'existe pas' .format(list[i].value))
+                return 1, 0
         elif list[i].value == ')':
             while len(ops) != 0 and ops[-1] != '(':
                 val2 = values.pop()
@@ -66,7 +62,7 @@ def evaluate(list):
             print('Division by 0')
             return
         values.append(doOp(val1, val2, op))
-    return values[-1]
+    return 0, values[-1]
 
 
 # This code is contributed

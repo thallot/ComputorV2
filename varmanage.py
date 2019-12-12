@@ -1,5 +1,4 @@
-import numpy as np
-from calc import *
+import calc
 
 class Variable():
     """Variable"""
@@ -9,9 +8,7 @@ class Variable():
         self.type = type
 
     def __repr__(self):
-        if self.type == 'MATRICE':
-            print(np.array(self.value.replace(';', ',')))
-        return ('{}' .format(self.value))
+        return ('{} = {}' .format(self.name, self.value))
 
 def addVar(varList, newVar):
     """ Ajoute une variable a la liste ou la modifie si elle existe deja"""
@@ -24,8 +21,8 @@ def addVar(varList, newVar):
     if exist == 0:
         varList.append(newVar)
 
-def getVar(varList, name):
-    """ retourne la variable demandé (par son nom) si elle existe """
+def getVarInList(varList, name):
+    """ retourne la variable demandee (par son nom) si elle existe """
     exist = 0
     for element in varList:
         if element.name == name:
@@ -37,20 +34,22 @@ def defineVar(list, varList):
     if  list[2].value == '-':
         list[3].value *= -1
         del list[2]
-    value = evaluate(list[2:len(list)])
-    if not value == None:
+    error, value = calc.evaluate(list[2:len(list)], varList)
+    if not error:
         newVar = Variable(list[0].value, value, 'FLOAT')
         addVar(varList, newVar)
         print(newVar)
-    else:
-        print('Error in defineVar')
+
+def printVar(varList):
+    for variable in varList:
+        print('->', variable)
 
 def manageVar(list, varList):
     """ Gere les assignations et l'affichage des variables """
     lenList = len(list)
     if lenList >= 3 and list[0].type == 'VAR' and list[1].value == '=':
         if lenList == 3 and list[2].type == 'VAR':
-            exist, oldVar = getVar(varList, list[2].value)
+            exist, oldVar = getVarInList(varList, list[2].value)
             if exist and not oldVar.name == list[0].value:
                 newVar = Variable(list[0].value, oldVar.value, oldVar.type)
                 addVar(varList, newVar)
@@ -60,7 +59,7 @@ def manageVar(list, varList):
         else:
             defineVar(list, varList)
     if lenList == 1 and list[0].type == 'VAR':
-        exist, myVar = getVar(varList, list[0].value)
+        exist, myVar = getVarInList(varList, list[0].value)
         if exist:
             print(myVar)
         else:
