@@ -1,5 +1,6 @@
 from calc import *
 from copy import deepcopy
+import parsing
 import varmanage
 import re
 
@@ -47,14 +48,29 @@ def defineFunction(list, funList):
     addFunction(funList, newFunction)
     print(newFunction)
 
-def replaceVariable(function, value):
+def replaceVariable(function, value, funList, varList):
     variable = function.variable
     newList = deepcopy(function.value)
     error = 0
-    for token in newList:
+    for i, token in enumerate(newList):
         if token.type == 'VAR' and token.value == variable:
             token.type = 'FLOAT'
             token.value = float(value)
+        if token.type == 'FUNCTION':
+            name = token.value.split('(')[0]
+            print(name, function.name)
+            if not name == function.name:
+                print(name, function)
+                exist, subFunction = getFunctionInList(funList, name)
+                if exist:
+                    newSubList, error = replaceVariable(subFunction, value, funList, varList)
+                    if not error:
+                        res, error = functionmanage.funResult(name, varList, funList, value)
+                        del newList[i]
+                        newList.insert(i, parsing.Element('FLOAT', res, 1))
+            else:
+                error = 1
+                break
     return newList, error
 
 def printFun(funList):
@@ -65,12 +81,15 @@ def printFun(funList):
         for function in funList:
             print('->', function)
 
-def funResult(name, varList, funList):
+def funResult(name, varList, funList, value=None):
     exist, myFunction = getFunctionInList(funList, name)
     tmp = re.search('(\((.*?)\))', name)
-    variable = tmp.group(0)[1:len(tmp.group(0))-1]
+    if value == None:
+        variable = tmp.group(0)[1:len(tmp.group(0))-1]
+    else:
+        variable = value
     if exist:
-        newList, error = replaceVariable(myFunction, variable)
+        newList, error = replaceVariable(myFunction, variable, funList, varList)
         if not error:
             error, res = evaluate(newList, varList, funList)
             if not error:

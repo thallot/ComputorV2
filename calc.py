@@ -45,6 +45,14 @@ def evaluate(list, varList, funList):
                 return 1, 0
             else:
                 values.append(res)
+        elif list[i].type == 'FUNCTION':
+            name = list[i].value.split('(')[0]
+            exist, function = functionmanage.getFunctionInList(funList, name)
+            res, error = functionmanage.funResult(list[i].value, varList, funList)
+            if error:
+                return 1, 0
+            else:
+                values.append(res)
         elif list[i].value == ')':
             while len(ops) != 0 and ops[-1] != '(':
                 val2 = values.pop()
