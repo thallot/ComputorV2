@@ -1,4 +1,5 @@
 Pouvoir mettre des variable plutot de que des chiffre dans les Fonction
+Fix Error si g(x) =  f(x) + f(x+ 1 )
 Ajouter COMPLEXE
 Ajouter MATRICE
 Ajouter equation
