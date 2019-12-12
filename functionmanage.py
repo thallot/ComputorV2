@@ -58,9 +58,7 @@ def replaceVariable(function, value, funList, varList):
             token.value = float(value)
         if token.type == 'FUNCTION':
             name = token.value.split('(')[0]
-            print(name, function.name)
             if not name == function.name:
-                print(name, function)
                 exist, subFunction = getFunctionInList(funList, name)
                 if exist:
                     newSubList, error = replaceVariable(subFunction, value, funList, varList)
@@ -99,7 +97,7 @@ def funResult(name, varList, funList, value=None):
         else:
             print('Function {} is invalid' .format(myFunction.name))
     else:
-        print('Function {} unknown' .format(list[0].value))
+        print('Function unknown')
     return 0, 0
 
 def manageFunction(list, funList, varList):

@@ -18,12 +18,18 @@ def isOperand(type):
         return 1
     return 0
 
-def isNbr(str):
+def isNbr(string):
     """Retourne vrai si str est numeric"""
-    dot = str.count('.')
+    dot = string.count('.')
     if dot > 1:
         return False
-    return all(c in "0123456789." for c in str)
+    nb = 0
+    for token in string:
+        if token.isnumeric():
+            nb += 1
+    if nb == 0:
+        return False
+    return all(c in "0123456789." for c in string)
 
 def isComplexe(str):
     """Retourne vrai si str est un nbr complexe"""
