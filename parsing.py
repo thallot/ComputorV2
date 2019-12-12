@@ -2,14 +2,19 @@ from lexeur import *
 import re
 
 class Element():
-    """Element de l'équation"""
-    def __init__(self, type, value):
+    """Element de l'equation"""
+    def __init__(self, type, value, operand):
         self.type = type
         self.value = value
+        self.operand = operand
 
     def __repr__(self):
         return ('Type {} | value {}' .format(self.type, self.value))
 
+def isOperand(type):
+    if type == 'INT' or type == 'FLOAT' or type == 'COMPLEXE' or type == 'MATRICE':
+        return 1
+    return 0
 
 def isNbr(str):
     """Retourne vrai si str est numeric"""
@@ -35,7 +40,7 @@ def isComplexe(str):
     return True
 
 def isMatrice(str):
-    """ Vérifie que la matrice soit bien formaté """
+    """ Verifie que la matrice soit bien formate """
     open = str.count('[')
     close = str.count(']')
     sep = str.count(';')
@@ -99,27 +104,29 @@ def GetValue(str, type):
     else:
         return str
 
+def checkErrorParsing(value, type, equation, i, error, error_value):
+    tmp = GetType(equation[i - 1])
+    if type == 'OP' and tmp == 'OP':
+        if value == '-' and equation[i - 1] == '+':
+            del list[i - 1]
+        elif not (value == '-' or value == '?'):
+            error = 1
+            error_value = 'Double operator'
+    elif type == '?':
+        error = 1
+        error_value = value
+    return error, error_value
 
 def Parser(string):
-    """ Crée une liste d'élement à partir de l'input """
+    """ Cree une liste d'élement à partir de l'input """
     list = []
     equation, error, error_value = Lexeur(string)
-    strEqu = ""
     if error:
-        return strEqu, list, error, error_value
+        return list, error, error_value
     for i, element in enumerate(equation):
         type = GetType(element)
         value = GetValue(element, type)
-        list.append(Element(type, value))
-        tmp = GetType(equation[i - 1])
-        strEqu += " " + str(value)
-        if type == 'OP' and tmp == 'OP':
-            if value == '-' and equation[i - 1] == '+':
-                del list[i - 1]
-            elif not (value == '-' or value == '?'):
-                error = 1
-                error_value = 'Double operator'
-        elif type == '?':
-            error = 1
-            error_value = value
-    return strEqu, list, error, error_value
+        operand = isOperand(type)
+        list.append(Element(type, value, operand))
+        error, error_value = checkErrorParsing(value, type, equation, i, error, error_value)
+    return list, error, error_value

@@ -40,6 +40,9 @@ def FixList(equation):
         elif '(' in element:
             if not ')' in element:
                 InsertPart(equation, element, i)
+        elif ')' in element:
+            if not '(' in element:
+                InsertPart(equation, element, i)
         elif '[' in element:
             InsertPart(equation, element, i)
         elif ']' in element:
@@ -89,28 +92,7 @@ def GetComplexe(equation, element, i):
         del equation[k]
     equation.insert(k, tmp)
 
-def CheckError(list):
-    """ Check les erreur potentiel dans l'input """
-    begin = [0, 0]
-    end = [0, 0]
-    for element in list:
-        if element == '(':
-            begin[0] += 1
-        elif element == ')':
-            end[0] += 1
-        elif element == '[':
-            begin[1] += 1
-        elif element == ']':
-            end[1] += 1
-    if end[0] != begin[0]:
-        print("Missing bracket : ()\n")
-        return 1
-    if end[1] != begin[1]:
-        print("Missing bracket : []\n")
-        return 1
-    return 0
-
-def CheckErrorString(string):
+def CheckError(string, equation):
     error_value = ""
     error = 0
     if string.count('=') >= 2:
@@ -127,9 +109,6 @@ def Lexeur(string):
     nb = ""
     str = ""
     split = list(string)
-    error, error_value = CheckErrorString(string)
-    if error:
-        return equation, error, error_value
     for i, element in enumerate(split):
         if IsOperator(element):
             nb, str = CleanBuffer(nb, str, equation)
@@ -147,5 +126,8 @@ def Lexeur(string):
     CleanBuffer(nb, str, equation)
     CleanList(equation)
     FixList(equation)
-    error = CheckError(equation)
+    print(equation)
+    error, error_value = CheckError(string, equation)
+    if error:
+        return equation, error, error_value
     return equation, error, error_value

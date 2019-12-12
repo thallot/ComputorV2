@@ -1,4 +1,5 @@
 import numpy as np
+from calc import *
 
 class Variable():
     """Variable"""
@@ -31,22 +32,33 @@ def getVar(varList, name):
             return 1, element
     return 0, 0
 
+def defineVar(list, varList):
+    """ Assigne la valeur a une variable """
+    if  list[2].value == '-':
+        list[3].value *= -1
+        del list[2]
+    value = evaluate(list[2:len(list)])
+    if not value == None:
+        newVar = Variable(list[0].value, value, 'FLOAT')
+        addVar(varList, newVar)
+        print(newVar)
+    else:
+        print('Error in defineVar')
+
 def manageVar(list, varList):
     """ Gere les assignations et l'affichage des variables """
     lenList = len(list)
     if lenList >= 3 and list[0].type == 'VAR' and list[1].value == '=':
-        if lenList == 3 and (list[2].type == 'INT' or list[2].type == 'FLOAT' \
-        or list[2].type == 'COMPLEXE' or list[2].type == 'MATRICE'):
-            newVar = Variable(list[0].value, list[2].value, list[2].type)
-            addVar(varList, newVar)
-            print(newVar)
-        elif lenList == 4 and list[2].value == '-' and (list[3].type == 'INT' \
-        or list[3].type == 'FLOAT' or list[3].type == 'COMPLEXE' or list[3].type == 'MATRICE'):
-            newVar = Variable(list[0].value, list[3].value * -1, list[3].type)
-            addVar(varList, newVar)
-            print(newVar)
+        if lenList == 3 and list[2].type == 'VAR':
+            exist, oldVar = getVar(varList, list[2].value)
+            if exist and not oldVar.name == list[0].value:
+                newVar = Variable(list[0].value, oldVar.value, oldVar.type)
+                addVar(varList, newVar)
+                print(newVar)
+            else:
+                print('Error')
         else:
-            print('Do calc')#Faire op pour trouver la valeur de la variable
+            defineVar(list, varList)
     if lenList == 1 and list[0].type == 'VAR':
         exist, myVar = getVar(varList, list[0].value)
         if exist:
