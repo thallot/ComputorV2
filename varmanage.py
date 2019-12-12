@@ -29,39 +29,46 @@ def getVarInList(varList, name):
             return 1, element
     return 0, 0
 
-def defineVar(list, varList):
+def defineVar(list, varList, funList):
     """ Assigne la valeur a une variable """
     if  list[2].value == '-':
         list[3].value *= -1
         del list[2]
-    error, value = calc.evaluate(list[2:len(list)], varList)
+    error, value = calc.evaluate(list[2:len(list)], varList, funList)
     if not error:
         newVar = Variable(list[0].value, value, 'FLOAT')
         addVar(varList, newVar)
-        print(newVar)
+        print(newVar.value)
 
 def printVar(varList):
-    for variable in varList:
-        print('->', variable)
+    print('__VARIABLES__')
+    if len(varList) == 0:
+        print('No variable defined')
+    else:
+        for variable in varList:
+            print('->', variable)
 
-def manageVar(list, varList):
+def manageVar(list, varList, funList):
     """ Gere les assignations et l'affichage des variables """
     lenList = len(list)
+    isPrint = 0
     if lenList >= 3 and list[0].type == 'VAR' and list[1].value == '=':
+        isPrint = 1
         if lenList == 3 and list[2].type == 'VAR':
             exist, oldVar = getVarInList(varList, list[2].value)
             if exist and not oldVar.name == list[0].value:
                 newVar = Variable(list[0].value, oldVar.value, oldVar.type)
                 addVar(varList, newVar)
-                print(newVar)
+                print(newVar.value)
             else:
                 print('Error')
         else:
-            defineVar(list, varList)
+            defineVar(list, varList, funList)
     if lenList == 1 and list[0].type == 'VAR':
+        isPrint = 1
         exist, myVar = getVarInList(varList, list[0].value)
         if exist:
             print(myVar)
         else:
             print('Var {} unknown' .format(list[0].value))
-    return varList
+    return varList, isPrint

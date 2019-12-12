@@ -1,5 +1,6 @@
 from parsing import *
 import varmanage
+import functionmanage
 
 def precedence(op):
     """ Determine les priorite entre les operateur """
@@ -11,14 +12,17 @@ def precedence(op):
 
 def doOp(a, b, op):
     """ retourne le result a OP b """
-    if op == '+': return a + b
-    if op == '-': return a - b
-    if op == '*': return a * b
-    if op == '/': return a / b
-    if op == '^': return a ** b
-    if op == '%': return a % b
+    try:
+        if op == '+': return a + b
+        if op == '-': return a - b
+        if op == '*': return a * b
+        if op == '/': return a / b
+        if op == '^': return a ** b
+        if op == '%': return a % b
+    except:
+        print('Can not calculate')
 
-def evaluate(list, varList):
+def evaluate(list, varList, funList):
     """ NPR Calc sur la liste du parser """
     values = []
     ops = []
@@ -35,6 +39,12 @@ def evaluate(list, varList):
             else:
                 print('La variable {} n\'existe pas' .format(list[i].value))
                 return 1, 0
+        elif list[i].type == 'FUNCALL':
+            res, error = functionmanage.funResult(list[i].value, varList, funList)
+            if error:
+                return 1, 0
+            else:
+                values.append(res)
         elif list[i].value == ')':
             while len(ops) != 0 and ops[-1] != '(':
                 val2 = values.pop()
@@ -45,8 +55,11 @@ def evaluate(list, varList):
         else:
             while (len(ops) != 0 and
                 precedence(ops[-1]) >= precedence(list[i].value)):
-                val2 = values.pop()
-                val1 = values.pop()
+                if len(values) >= 2:
+                    val2 = values.pop()
+                    val1 = values.pop()
+                else:
+                    return 1, 0
                 op = ops.pop()
                 if (op == '/' or op == '%') and (val1 == 0 or val2 == 0):
                     print('Division by 0')
@@ -55,8 +68,11 @@ def evaluate(list, varList):
             ops.append(list[i].value)
         i += 1
     while len(ops) != 0:
-        val2 = values.pop()
-        val1 = values.pop()
+        if len(values) >= 2:
+            val2 = values.pop()
+            val1 = values.pop()
+        else:
+            return 1, 0
         op = ops.pop()
         if (op == '/' or op == '%') and (val1 == 0 or val2 == 0):
             print('Division by 0')
@@ -64,6 +80,17 @@ def evaluate(list, varList):
         values.append(doOp(val1, val2, op))
     return 0, values[-1]
 
-
-# This code is contributed
-# by Rituraj Jain
+def manageCalc(list, varList, funList):
+    lenList = len(list)
+    isPrint = 0
+    if lenList == 1 and list[0].type != 'FUNCALL' and list[0].type != 'VAR':
+        isPrint = 1
+        print(list[0].value)
+    if lenList >= 2 and list[1].value != '=':
+        isPrint = 1
+        error, res = evaluate(list, varList, funList)
+        if not error:
+            print(res)
+        else:
+            print('Invalid input')
+    return isPrint

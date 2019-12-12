@@ -119,19 +119,6 @@ def GetValue(str, type):
     else:
         return str
 
-def checkErrorParsing(value, type, equation, i, error, error_value):
-    tmp = GetType(equation[i - 1])
-    if type == 'OP' and tmp == 'OP':
-        if value == '-' and equation[i - 1] == '+':
-            del list[i - 1]
-        elif not (value == '-' or value == '?'):
-            error = 1
-            error_value = 'Double operator'
-    elif type == '?':
-        error = 1
-        error_value = value
-    return error, error_value
-
 def Parser(string):
     """ Cree une liste d'element a partir de l'input """
     list = []
@@ -143,12 +130,18 @@ def Parser(string):
         value = GetValue(element, type)
         operand = isOperand(type)
         list.append(Element(type, value, operand))
-        error, error_value = checkErrorParsing(value, type, equation, i, error, error_value)
+        tmp = GetType(equation[i - 1])
+        if type == 'OP' and tmp == 'OP' and not (value == '-' or value == '?'):
+            error = 1
+            error_value = 'Double operator'
+        elif type == '?':
+            error = 1
+            error_value = value
     return list, error, error_value
 
 def detectFunction(funList, varList, list):
-    functionCall = ""
     for i, token in enumerate(list):
+        functionCall = ""
         if token.type == 'VAR':
             exist, function = getFunctionInList(funList, token.value)
             if exist and i + 4 <= len(list):
@@ -156,4 +149,4 @@ def detectFunction(funList, varList, list):
                 for i in range(0, 4):
                     functionCall += str(list.pop(k).value)
                 funcall = Element('FUNCALL', functionCall, 0)
-                list.insert(i, funcall)
+                list.insert(k, funcall)

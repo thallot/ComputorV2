@@ -49,6 +49,11 @@ def FixList(equation):
             InsertPart(equation, element, i)
         elif 'i' in element:
             GetComplexe(equation, element, i)
+        elif '-' in element and equation[i - 1] == '+':
+            del equation[i - 1]
+        elif '-' in element and equation[i - 1] == '-':
+            del equation[i - 1]
+            equation[i - 1] = '+'
     for i, element in enumerate(equation):
         if '[' in element:
             GetMatrice(equation, element, i)
@@ -126,7 +131,6 @@ def Lexeur(string):
     CleanBuffer(nb, str, equation)
     CleanList(equation)
     FixList(equation)
-    print(equation)
     error, error_value = CheckError(string, equation)
     if error:
         return equation, error, error_value
