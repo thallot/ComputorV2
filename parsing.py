@@ -76,7 +76,7 @@ class Element():
             elif self.type == 'COMPLEXE' and nb.type == 'COMPLEXE':
                     imgPart = str(nb.imgPart * self.imgPart) + 'i'
                     reelPart = str(nb.reelPart * self.reelPart)
-                    if nb.reelPart + self.reelParti >= 0:
+                    if nb.reelPart + self.reelPart >= 0:
                         reelPart = '+' + reelPart
                     newElem = Element(imgPart + reelPart)
                     return newElem
@@ -140,7 +140,7 @@ class Element():
             elif self.type == 'COMPLEXE' and nb.type == 'COMPLEXE':
                     imgPart = str(nb.imgPart % self.imgPart) + 'i'
                     reelPart = str(nb.reelPart % self.reelPart)
-                    if nb.reelPart + self.reelParti >= 0:
+                    if nb.reelPart + self.reelPart >= 0:
                         reelPart = '+' + reelPart
                     newElem = Element(imgPart + reelPart)
                     return newElem
@@ -173,7 +173,7 @@ class Element():
             elif self.type == 'COMPLEXE' and nb.type == 'COMPLEXE':
                     imgPart = str(self.imgPart ** nb.imgPart) + 'i'
                     reelPart = str(self.reelPart ** nb.reelPart)
-                    if nb.reelPart + self.reelParti >= 0:
+                    if nb.reelPart + self.reelPart >= 0:
                         reelPart = '+' + reelPart
                     newElem = Element(imgPart + reelPart)
                     return newElem
