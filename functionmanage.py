@@ -64,7 +64,7 @@ def replaceVariable(function, value, funList, varList):
                 if exist:
                     newSubList, error = replaceVariable(subFunction, value, funList, varList)
                     if not error:
-                        res, error = functionmanage.funResult(name, varList, funList, value)
+                        res, error = funResult(name, varList, funList, value)
                         del newList[i]
                         newList.insert(i, Element(str(res)))
             else:

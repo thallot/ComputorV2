@@ -22,7 +22,7 @@ class Element():
                 reelPart = '+' + reelPart
             return imgPart + reelPart
         elif self.type == 'MATRICE':
-            return str(self.matrice)
+            return ' ' + str(self.matrice)[1:-1]
         else:
             return ('Type {} | value {} | Operand : {}\n' .format(self.type, self.value, self.operand))
 
@@ -43,7 +43,7 @@ class Element():
             elif self.type == 'COMPLEXE' and nb.type == 'COMPLEXE':
                     imgPart = str(nb.imgPart + self.imgPart) + 'i'
                     reelPart = str(nb.reelPart + self.reelPart)
-                    if nb.reelPart + self.reelParti >= 0:
+                    if nb.reelPart + self.reelPart >= 0:
                         reelPart = '+' + reelPart
                     newElem = Element(imgPart + reelPart)
                     return newElem
@@ -92,25 +92,23 @@ class Element():
         else:
             print('Error')
 
-    def __div__(self, nb):
+    def __truediv__(self, nb):
         if isinstance(nb, Element):
             if (self.type == 'INT' or self.type == 'FLOAT') \
             and (nb.type == 'INT' or nb.type == 'FLOAT'):
-                newElem = Element(str(nb.value / self.value))
+                newElem = Element(str(self.value / nb.value))
                 return newElem
             elif  (self.type == 'INT' or self.type == 'FLOAT') \
             and nb.type == 'COMPLEXE':
-                    imgPart = str(nb.imgPart / self.value) + 'i'
-                    reelPart = str(nb.reelPart / self.value)
-                    if nb.reelPart + self.value >= 0:
+                    imgPart = str(self.imgPart / nb.value) + 'i'
+                    reelPart = str(self.reelPart / nb.value)
+                    if nb.reelPart / self.value >= 0:
                         reelPart = '+' + reelPart
                     newElem = Element(imgPart + reelPart)
                     return newElem
             elif self.type == 'COMPLEXE' and nb.type == 'COMPLEXE':
-                    imgPart = str(nb.imgPart / self.imgPart) + 'i'
-                    reelPart = str(nb.reelPart / self.reelPart)
-                    if nb.reelPart + self.reelParti >= 0:
-                        reelPart = '+' + reelPart
+                    imgPart = str(self.imgPart / nb.imgPart) + 'i'
+                    reelPart = str(self.reelPart / nb.reelPart)
                     newElem = Element(imgPart + reelPart)
                     return newElem
             elif self.type == 'MATRICE' and nb.type == 'MATRICE':
@@ -162,19 +160,19 @@ class Element():
         if isinstance(nb, Element):
             if (self.type == 'INT' or self.type == 'FLOAT') \
             and (nb.type == 'INT' or nb.type == 'FLOAT'):
-                newElem = Element(str(nb.value * self.value))
+                newElem = Element(str(self.value ** nb.value))
                 return newElem
             elif  (self.type == 'INT' or self.type == 'FLOAT') \
             and nb.type == 'COMPLEXE':
-                    imgPart = str(nb.imgPart * self.value) + 'i'
-                    reelPart = str(nb.reelPart * self.value)
-                    if nb.reelPart + self.value >= 0:
+                    imgPart = str(self.imgPart ** nb.value) + 'i'
+                    reelPart = str(self.reelPart ** nb.value)
+                    if nb.reelPart ** self.value >= 0:
                         reelPart = '+' + reelPart
                     newElem = Element(imgPart + reelPart)
                     return newElem
             elif self.type == 'COMPLEXE' and nb.type == 'COMPLEXE':
-                    imgPart = str(nb.imgPart * self.imgPart) + 'i'
-                    reelPart = str(nb.reelPart * self.reelPart)
+                    imgPart = str(self.imgPart ** nb.imgPart) + 'i'
+                    reelPart = str(self.reelPart ** nb.reelPart)
                     if nb.reelPart + self.reelParti >= 0:
                         reelPart = '+' + reelPart
                     newElem = Element(imgPart + reelPart)
@@ -187,7 +185,7 @@ class Element():
                 print('Can not calculate')
                 return None
             else:
-                return nb * self
+                return nb ** self
         else:
             print('Error')
 
@@ -243,6 +241,10 @@ class Element():
     def getComplexe(self):
         if self.type == 'COMPLEXE':
             tmp = self.value.split('i')
+            if tmp[0] == '':
+                tmp[0] = 0
+            if tmp[1] == '':
+                tmp[1] = 0
             return float(tmp[0]), float(tmp[1])
         return 0, 0
 
@@ -339,4 +341,7 @@ def Parser(string):
         if list[i].type == '?':
             error = 1
             error_value = 'Unknown value ' + str(list[i].value)
+    if len(list) > 2 and list[-1].value == '?' and list[-2].value == '=':
+        del list[-1]
+        del list[-1]
     return list, error, error_value

@@ -8,7 +8,7 @@ class Variable():
         self.type = type
 
     def __repr__(self):
-        return ('{} = {}' .format(self.name, self.value))
+        return ('{}' .format(self.value))
 
 def addVar(varList, newVar):
     """ Ajoute une variable a la liste ou la modifie si elle existe deja"""

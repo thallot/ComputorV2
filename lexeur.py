@@ -82,22 +82,21 @@ def GetMatrice(equation, element, i):
 def GetComplexe(equation, element, i):
     """ Genere un complexe """
     tmp = ""
-    if i == 0 or i >= len(equation) - 2:
-        return
-    if equation[i - 1] == '*':
+    pos = i
+    if equation[i - 1] == "*":
         del equation[i - 1]
         i -= 1
-    if i > 1 and (equation[i - 2] == '-'):
-        tmp += equation[i - 2]
-        del equation[i - 2]
+    if i > 0 and equation[i - 1].isnumeric():
+        tmp += equation.pop(i - 1)
         i -= 1
-    i -= 1
-    j = k = i
-    for i in range(i, i + 4):
-        tmp += equation[i]
-    for j in range(j, j + 4):
-        del equation[k]
-    equation.insert(k, tmp)
+    if i > 0 and equation[i -1] == '-':
+        tmp = equation.pop(i - 1) + tmp
+        i -= 1
+    tmp += equation.pop(i)
+    if i + 1 < len(equation) and (equation[i] == '+' or equation[i] == '-') and equation[i + 1].isnumeric():
+        tmp += equation.pop(i)
+        tmp += equation.pop(i)
+    equation.insert(pos - 1, tmp)
 
 def getFunctionCall(equation, element, i):
     """ Regroupe les caracteres d'un appel de fonction """

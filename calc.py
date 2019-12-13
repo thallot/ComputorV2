@@ -1,6 +1,6 @@
 from parsing import *
 import varmanage
-import functionmanage
+from functionmanage import *
 
 def precedence(op):
     """ Determine les priorite entre les operateur """
@@ -38,13 +38,13 @@ def evaluate(list, varList, funList):
             else:
                 return 1, 0
         elif list[i].type == 'FUNCALL':
-            res, error = functionmanage.funResult(list[i].value, varList, funList)
+            res, error = funResult(list[i].value, varList, funList)
             if error:
                 return 1, 0
             else:
                 values.append(res)
         elif list[i].value == ')':
-            while len(ops) != 0 and ops[-1] != '(':
+            while len(ops) != 0 and ops[-1] != '(' and len(values) >= 2:
                 val2 = values.pop()
                 val1 = values.pop()
                 op = ops.pop()
@@ -72,7 +72,7 @@ def evaluate(list, varList, funList):
         else:
             return 1, 0
         op = ops.pop()
-        if (op == '/' or op == '%') and (val2 == 0):
+        if (op == '/' or op == '%') and (val2.value == 0):
             return 1, 0
         values.append(doOp(val1, val2, op))
     return 0, values[-1]
