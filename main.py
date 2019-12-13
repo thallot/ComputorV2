@@ -2,6 +2,7 @@ from parsing import *
 from varmanage import *
 from functionmanage import *
 from calc import *
+import numpy as np
 
 def specialInput(history, varList, funList, str):
     spe = 0
@@ -46,11 +47,13 @@ if __name__ == '__main__':
     while 1:
         list, error = GetInput(varList, funList, history)
         if not error:
-            detectFunction(funList, varList, list)
-            print(list)
             varList, isPrintVar = manageVar(list, varList, funList)
+            if isPrintVar:
+                continue
             funList, isPrintFun = manageFunction(list, funList, varList)
-            if not (isPrintVar and isPrintFun):
-                isPrint = manageCalc(list, varList, funList)
-            if not (isPrintVar or isPrintFun or isPrint):
-                print('Invalid input...')
+            if isPrintFun:
+                continue
+            isPrint = manageCalc(list, varList, funList)
+            if isPrint:
+                continue
+            print('Invalid input...')

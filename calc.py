@@ -12,15 +12,14 @@ def precedence(op):
 
 def doOp(a, b, op):
     """ retourne le result a OP b """
-    try:
-        if op == '+': return a + b
-        if op == '-': return a - b
-        if op == '*': return a * b
-        if op == '/': return a / b
-        if op == '^': return a ** b
-        if op == '%': return a % b
-    except:
-        print('Can not calculate')
+
+    if op == '*' or op == '**': return a * b
+    if op == '+': return a + b
+    if op == '-': return a - b
+    if op == '/': return a / b
+    if op == '^': return a ** b
+    if op == '%': return a % b
+
 
 def evaluate(list, varList, funList):
     """ NPR Calc sur la liste du parser """
@@ -30,24 +29,15 @@ def evaluate(list, varList, funList):
     while i < len(list):
         if list[i].value == '(':
             ops.append(list[i].value)
-        elif list[i].type == 'INT' or list[i].type == 'FLOAT':
-            values.append(list[i].value)
+        elif list[i].operand:
+            values.append(list[i])
         elif list[i].type == 'VAR':
             exist, var = varmanage.getVarInList(varList, list[i].value)
             if exist and (var.type == 'INT' or var.type == 'FLOAT'):
                 values.append(var.value)
             else:
-                print('La variable {} n\'existe pas' .format(list[i].value))
                 return 1, 0
         elif list[i].type == 'FUNCALL':
-            res, error = functionmanage.funResult(list[i].value, varList, funList)
-            if error:
-                return 1, 0
-            else:
-                values.append(res)
-        elif list[i].type == 'FUNCTION':
-            name = list[i].value.split('(')[0]
-            exist, function = functionmanage.getFunctionInList(funList, name)
             res, error = functionmanage.funResult(list[i].value, varList, funList)
             if error:
                 return 1, 0
@@ -82,9 +72,8 @@ def evaluate(list, varList, funList):
         else:
             return 1, 0
         op = ops.pop()
-        if (op == '/' or op == '%') and (val1 == 0 or val2 == 0):
-            print('Division by 0')
-            return
+        if (op == '/' or op == '%') and (val2 == 0):
+            return 1, 0
         values.append(doOp(val1, val2, op))
     return 0, values[-1]
 

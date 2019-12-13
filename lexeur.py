@@ -1,3 +1,5 @@
+import re
+
 def IsOperator(element):
     """ Retourne 1 si l'element est un operateur """
     if element == '*' or element == '^' or element == '+' or element == '-'\
@@ -37,12 +39,12 @@ def FixList(equation):
         if equation[i] == '*' and equation[i + 1] == '*':
             equation[i] = '**'
             del equation[i + 1]
-        elif '(' in element:
-            if not ')' in element:
-                InsertPart(equation, element, i)
-        elif ')' in element:
-            if not '(' in element:
-                InsertPart(equation, element, i)
+        elif '((' in element:
+            InsertPart(equation, element, i)
+        elif '))' in element:
+            InsertPart(equation, element, i)
+        elif re.match('[a-zA-Z]+\(', element):
+            getFunctionCall(equation, element, i)
         elif '[' in element:
             InsertPart(equation, element, i)
         elif ']' in element:
@@ -97,6 +99,20 @@ def GetComplexe(equation, element, i):
         del equation[k]
     equation.insert(k, tmp)
 
+def getFunctionCall(equation, element, i):
+    """ Regroupe les caracteres d'un appel de fonction """
+    tmp = ""
+    tmp += equation[i]
+    if i + 2 > len(equation):
+        return
+    if equation[i + 1].isnumeric() and ')' in equation[i + 2]:
+        tmp += equation[i + 1]
+        tmp += equation[i + 2]
+        toDel = i
+        for j in range(i, i + 3):
+            del equation[toDel]
+        equation.insert(i, tmp)
+
 def CheckError(string, equation):
     error_value = ""
     error = 0
@@ -106,6 +122,11 @@ def CheckError(string, equation):
     if string.count('(') != string.count(')'):
         error_value = 'Missing ()'
         error = 1
+    for i, element in enumerate(equation):
+        if IsOperator(equation[i - 1]) and IsOperator(equation[i]):
+            if not (equation[i] == '-' or equation[i] == '?'):
+                error = 1
+                error_value = "Double operator"
     return error, error_value
 
 def Lexeur(string):
@@ -123,7 +144,7 @@ def Lexeur(string):
             if not str == "":
                 equation.append(str.strip())
                 str = ""
-        elif not element == " ":
+        elif not (element == " " and element == '(' and element == ')'):
             str += element
             if not nb == "":
                 equation.append(nb.strip())

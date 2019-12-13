@@ -1,6 +1,6 @@
-from calc import *
 from copy import deepcopy
-import parsing
+import calc
+from parsing import *
 import varmanage
 import re
 
@@ -56,6 +56,7 @@ def replaceVariable(function, value, funList, varList):
         if token.type == 'VAR' and token.value == variable:
             token.type = 'FLOAT'
             token.value = float(value)
+            token.operand = 1
         if token.type == 'FUNCTION':
             name = token.value.split('(')[0]
             if not name == function.name:
@@ -65,7 +66,7 @@ def replaceVariable(function, value, funList, varList):
                     if not error:
                         res, error = functionmanage.funResult(name, varList, funList, value)
                         del newList[i]
-                        newList.insert(i, parsing.Element('FLOAT', res, 1))
+                        newList.insert(i, Element(str(res)))
             else:
                 error = 1
                 break
@@ -89,7 +90,7 @@ def funResult(name, varList, funList, value=None):
     if exist:
         newList, error = replaceVariable(myFunction, variable, funList, varList)
         if not error:
-            error, res = evaluate(newList, varList, funList)
+            error, res = calc.evaluate(newList, varList, funList)
             if not error:
                 return res, 0
             else:
@@ -104,9 +105,12 @@ def manageFunction(list, funList, varList):
     """ Gere les assignations et l'affichage des function """
     lenList = len(list)
     isPrint = 0
-    if lenList >= 3 and list[0].type == 'FUNCTION' and list[1].value == '=':
+    if lenList >= 3 and list[0].type == 'FUNCTION':
         isPrint = 1
-        defineFunction(list, funList)
+        if list[1].value == '=':
+            defineFunction(list, funList)
+        else:
+            print('Error in function definition')
     if lenList == 1 and list[0].type == 'FUNCALL':
         isPrint = 1
         res, error = funResult(list[0].value, varList, funList)
