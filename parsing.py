@@ -59,6 +59,39 @@ class Element():
         else:
             print('Error')
 
+    def __sub__(self, nb):
+        if isinstance(nb, Element):
+            if (self.type == 'INT' or self.type == 'FLOAT') \
+            and (nb.type == 'INT' or nb.type == 'FLOAT'):
+                newElem = Element(str(self.value - nb.value))
+                return newElem
+            elif  (self.type == 'INT' or self.type == 'FLOAT') \
+            and nb.type == 'COMPLEXE':
+                    imgPart = str(nb.imgPart) + 'i'
+                    reelPart = str(nb.reelPart - self.value)
+                    if nb.reelPart + self.value >= 0:
+                        reelPart = '+' + reelPart
+                    newElem = Element(imgPart + reelPart)
+                    return newElem
+            elif self.type == 'COMPLEXE' and nb.type == 'COMPLEXE':
+                    imgPart = str(nb.imgPart - self.imgPart) + 'i'
+                    reelPart = str(nb.reelPart - self.reelPart)
+                    if nb.reelPart + self.reelPart >= 0:
+                        reelPart = '+' + reelPart
+                    newElem = Element(imgPart + reelPart)
+                    return newElem
+            elif self.type == 'MATRICE' and nb.type == 'MATRICE':
+                return str(self.matrice - nb.matrice)
+            elif self.type == 'MATRICE' and (nb.type == 'INT' or nb.type == 'FLOAT'):
+                return str(self.matrice - nb.value)
+            elif self.type == 'MATRICE' and nb.type == 'COMPLEXE':
+                print('Can not calculate')
+                return None
+            else:
+                return nb - self
+        else:
+            print('Error')
+
     def __mul__(self, nb):
         if isinstance(nb, Element):
             if (self.type == 'INT' or self.type == 'FLOAT') \
@@ -272,7 +305,7 @@ class Element():
                 nb += 1
         if nb == 0:
             return False
-        return all(c in "0123456789." for c in string)
+        return all(c in "0123456789.+-" for c in string)
 
     def isComplexe(self, str):
         """Retourne vrai si str est un nbr complexe"""
@@ -344,4 +377,7 @@ def Parser(string):
     if len(list) > 2 and list[-1].value == '?' and list[-2].value == '=':
         del list[-1]
         del list[-1]
+    elif len(list) == 1 and list[0].operand == 0:
+        error = 1
+        error_value = "Not a valid input"
     return list, error, error_value

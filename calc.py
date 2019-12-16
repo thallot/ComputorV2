@@ -12,13 +12,15 @@ def precedence(op):
 
 def doOp(a, b, op):
     """ retourne le result a OP b """
-
-    if op == '*' or op == '**': return a * b
-    if op == '+': return a + b
-    if op == '-': return a - b
-    if op == '/': return a / b
-    if op == '^': return a ** b
-    if op == '%': return a % b
+    try:
+        if op == '*' or op == '**': return a * b
+        if op == '+': return a + b
+        if op == '-': return a - b
+        if op == '/': return a / b
+        if op == '^': return a ** b
+        if op == '%': return a % b
+    except:
+        print('Sorry, something wrong')
 
 
 def evaluate(list, varList, funList):

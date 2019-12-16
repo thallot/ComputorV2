@@ -10,12 +10,48 @@ class Function():
         self.name = name
         self.value = value
         self.variable = variable
+        self.polynome = self.getPolynome()
 
     def __repr__(self):
         rep = ""
         for token in self.value:
             rep += " " +  str(token.value)
-        return ('{}({}) = {}' .format(self.name, self.variable, rep))
+        return ('{}({}) = {} ({})' .format(self.name, self.variable, rep, self.polynome))
+
+    def getPolynome(self):
+        var = 0
+        for token in self.value:
+            if token.value == self.variable:
+                var = 1
+        if var:
+            return True
+        return False
+
+    def getPolynome(self):
+        polynome = []
+        equation = str()
+        solo = str()
+        tmp = str()
+        for i, token in enumerate(self.value):
+            if token.value == self.variable:
+                if i == 0:
+                    equation += '1*'
+                elif i >= 1 and self.value[i - 1].value != '*':
+                    print(self.value[i - 1])
+                    equation += '1*'
+            if str(token.value).isnumeric():
+                if (i >= 1 and self.value[i - 1].value != '^') or i == 0:
+                    if i + 1 < len(self.value) and self.value[i + 1].value != '*' \
+                    or i + 1 == len(self.value):
+                        if i >= 1 and (self.value[i - 1].value == '+' or self.value[i - 1].value == '-'):
+                            solo = self.value[i - 1].value + solo
+                            solo += str(token.value)
+                            tmp += solo
+                            solo = ""
+            equation += str(token.value)
+        nbr = re.findall('\d+\*' +  re.escape(self.variable) + '\^*\d*', equation)
+        print(equation)
+        print(nbr, tmp)
 
 def addFunction(funList, newFunction):
     """ Ajoute une function a la liste ou la modifie si elle existe deja"""
@@ -109,10 +145,20 @@ def manageFunction(list, funList, varList):
     isPrint = 0
     if lenList >= 3 and list[0].type == 'FUNCTION':
         isPrint = 1
-        if list[1].value == '=':
-            defineFunction(list, funList)
+        exist, function = getFunctionInList(funList, list[0].value)
+        if not exist:
+            if list[1].value == '=':
+                defineFunction(list, funList)
+            else:
+                print('Error in function definition')
+        elif list[1].value == '=':
+            if function.polynome:
+                print('Do calc')
+                function.getPolynome()
+            else:
+                print('This function is not a polynome')
         else:
-            print('Error in function definition')
+            print('Invalid Input.')
     if lenList == 1 and list[0].type == 'FUNCALL':
         isPrint = 1
         res, error = funResult(list[0].value, varList, funList)

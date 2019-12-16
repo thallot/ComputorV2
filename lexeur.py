@@ -36,7 +36,7 @@ def InsertPart(equation, element, i):
 def FixList(equation):
     """ Decoupe les str invalide et regroupe des caracteres pour former des elements coherent """
     for i, element in enumerate(equation):
-        if equation[i] == '*' and equation[i + 1] == '*':
+        if equation[i] == '*' and i + 1 < len(equation) and equation[i + 1] == '*':
             equation[i] = '**'
             del equation[i + 1]
         elif '((' in element:
@@ -51,11 +51,14 @@ def FixList(equation):
             InsertPart(equation, element, i)
         elif 'i' in element:
             GetComplexe(equation, element, i)
-        elif '-' in element and equation[i - 1] == '+':
+        elif '-' in element and i >= 1 and equation[i - 1] == '+':
             del equation[i - 1]
-        elif '-' in element and equation[i - 1] == '-':
+        elif '-' in element and i  >=1 and equation[i - 1] == '-':
             del equation[i - 1]
             equation[i - 1] = '+'
+        elif '-' in element and i +1 < len(equation) and  equation[i + 1].isnumeric():
+            equation[i] += equation[i+ 1]
+            del equation[i + 1]
     for i, element in enumerate(equation):
         if '[' in element:
             GetMatrice(equation, element, i)
