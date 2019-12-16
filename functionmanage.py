@@ -22,11 +22,10 @@ def addFunction(funList, newFunction):
     exist = 0
     for element in funList:
         if element.name == newFunction.name:
-            element.value = newFunction.value
-            element.variable = newFunction.variable
             exist = 1
     if exist == 0:
         funList.append(newFunction)
+    return exist
 
 def getFunctionInList(funList, name):
     if '(' in name:
@@ -45,8 +44,11 @@ def defineFunction(list, funList):
     value = list[2:len(list)]
     name = list[0].value.split('(')[0]
     newFunction = Function(name, value, variable)
-    addFunction(funList, newFunction)
-    print(newFunction)
+    exist = addFunction(funList, newFunction)
+    if exist == 0:
+        print(newFunction)
+    else:
+        print('This function is already defined')
 
 def replaceVariable(function, value, funList, varList):
     variable = function.variable
@@ -99,7 +101,7 @@ def funResult(name, varList, funList, value=None):
             print('Function {} is invalid' .format(myFunction.name))
     else:
         print('Function unknown')
-    return 0, 0
+    return 0, 1
 
 def manageFunction(list, funList, varList):
     """ Gere les assignations et l'affichage des function """
