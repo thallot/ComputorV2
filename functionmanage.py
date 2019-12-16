@@ -3,6 +3,7 @@ import calc
 from parsing import *
 import varmanage
 import re
+from computorv1 import *
 
 class Function():
     """Fonction"""
@@ -27,31 +28,75 @@ class Function():
             return True
         return False
 
-    def getPolynome(self):
+    def getPolynomeResult(self):
+        values = self.getPolynomeValues()
+        power = [0.0, 0.0, 0.0]
+        error = 0
+        for token in values:
+            tmp = token.replace('*', '').replace('^', '').split(self.variable)
+            if tmp[1] == "":
+                tmp[1] = 1
+            tmp[1] = int(tmp[1])
+            if tmp[1] >= 0 and tmp[1] <= 2:
+                power[tmp[1]] += float(tmp[0])
+            else:
+                error = 1
+        if not power[2] == 0:
+            MaxDegree = 2
+        elif not power[1] == 0:
+            MaxDegree = 1
+        elif not power[0] == 0:
+            MaxDegree = 0
+        doComputorv1(power, MaxDegree)
+
+    def getPolynomeValues(self):
         polynome = []
         equation = str()
         solo = str()
         tmp = str()
         for i, token in enumerate(self.value):
+            test = str(token.value)
             if token.value == self.variable:
                 if i == 0:
                     equation += '1*'
                 elif i >= 1 and self.value[i - 1].value != '*':
                     print(self.value[i - 1])
                     equation += '1*'
-            if str(token.value).isnumeric():
+            if self.isNumber(test):
                 if (i >= 1 and self.value[i - 1].value != '^') or i == 0:
                     if i + 1 < len(self.value) and self.value[i + 1].value != '*' \
-                    or i + 1 == len(self.value):
-                        if i >= 1 and (self.value[i - 1].value == '+' or self.value[i - 1].value == '-'):
+                    or i + 1 == len(self.value) or i == len(self.value):
+                        if i >= 1 and (self.value[i - 1].value == '+'):
                             solo = self.value[i - 1].value + solo
                             solo += str(token.value)
-                            tmp += solo
+                            tmp +=  " " + solo + "*x^0"
+                            solo = ""
+                        else:
+                            solo += str(token.value)
+                            tmp += solo + "*x^0"
                             solo = ""
             equation += str(token.value)
-        nbr = re.findall('\d+\*' +  re.escape(self.variable) + '\^*\d*', equation)
-        print(equation)
-        print(nbr, tmp)
+        nbr = re.findall('\-?\d+\*' +  re.escape(self.variable) + '\^*\d*', equation)
+        nbr.extend(tmp.split(' '))
+        return nbr
+
+    def isNumber(self, s):
+
+        # handle for negative values
+        negative = False
+        if(s[0] =='-'):
+            negative = True
+
+        if negative == True:
+            s = s[1:]
+
+        # try to convert the string to int
+        try:
+            n = int(s)
+            return True
+        # catch exception if cannot be converted
+        except ValueError:
+            return False
 
 def addFunction(funList, newFunction):
     """ Ajoute une function a la liste ou la modifie si elle existe deja"""
@@ -151,10 +196,20 @@ def manageFunction(list, funList, varList):
                 defineFunction(list, funList)
             else:
                 print('Error in function definition')
-        elif list[1].value == '=':
+        elif lenList == 3 and list[1].value == '=':
+            if list[2].type == 'VAR':
+                exist, var = varmanage.getVarInList(varList, list[2].value)
+                if not exist:
+                    print('Variable {} unknown' .format(list[2].value))
+                    return funList, isPrint
+                elif not int(var.value.value) == 0:
+                    print('Variable must be equal 0')
+                    return funList, isPrint
+            elif not (list[2].type == 'INT' or list[2].value == 0):
+                print('Polynome must be equal 0')
+                return funList, isPrint
             if function.polynome:
-                print('Do calc')
-                function.getPolynome()
+                function.getPolynomeResult()
             else:
                 print('This function is not a polynome')
         else:

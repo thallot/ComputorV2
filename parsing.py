@@ -377,7 +377,7 @@ def Parser(string):
     if len(list) > 2 and list[-1].value == '?' and list[-2].value == '=':
         del list[-1]
         del list[-1]
-    elif len(list) == 1 and list[0].operand == 0:
+    elif len(list) == 1 and (list[0].operand == 0 and list[0].type != 'VAR' and list[0].type != 'FUNCALL'):
         error = 1
         error_value = "Not a valid input"
     return list, error, error_value

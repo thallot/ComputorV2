@@ -46,7 +46,7 @@ def printVar(varList):
         print('No variable defined')
     else:
         for variable in varList:
-            print('->', variable)
+            print('-> {} = {}' .format(variable.name, variable.value))
 
 def manageVar(list, varList, funList):
     """ Gere les assignations et l'affichage des variables """
