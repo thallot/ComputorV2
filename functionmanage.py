@@ -33,14 +33,15 @@ class Function():
         power = [0.0, 0.0, 0.0]
         error = 0
         for token in values:
-            tmp = token.replace('*', '').replace('^', '').split(self.variable)
-            if tmp[1] == "":
-                tmp[1] = 1
-            tmp[1] = int(tmp[1])
-            if tmp[1] >= 0 and tmp[1] <= 2:
-                power[tmp[1]] += float(tmp[0])
-            else:
-                error = 1
+            if not token == '':
+                tmp = token.replace('*', '').replace('^', '').split(self.variable)
+                if tmp[1] == "":
+                    tmp[1] = 1
+                tmp[1] = int(tmp[1])
+                if tmp[1] >= 0 and tmp[1] <= 2:
+                    power[tmp[1]] += float(tmp[0])
+                else:
+                    error = 1
         if not power[2] == 0:
             MaxDegree = 2
         elif not power[1] == 0:
