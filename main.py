@@ -1,59 +1,60 @@
-from parsing import *
-from varmanage import *
-from functionmanage import *
+from Parser import *
+from Function import *
 from calc import *
-import numpy as np
 
-def specialInput(history, varList, funList, str):
-    spe = 0
-    history.append(str)
-    if str == "quit":
-        exit("Ok, see you")
-    elif str == '--history':
-        print('__HISTORY__')
-        history.pop()
-        if len(history) == 0:
-            print('Nothing')
-        else:
-            for token in history:
-                print(token)
-        spe = 1
-    elif str == "--var":
-        printVar(varList)
-        spe = 1
-    elif str == "--function":
-        printFun(funList)
-        spe = 1
-    elif str == "--all":
-        printVar(varList)
-        printFun(funList)
-        spe = 1
-    return spe
-
-def GetInput(varList, funList, history):
-    strInput = input('> ')
-    spe = specialInput(history, varList, funList, strInput)
-    if spe:
-        return 0, 1
-    list, error, error_value = Parser(strInput)
-    if error:
-        print('Error : ', error_value)
-    return list, error
 
 if __name__ == '__main__':
-    varList = []
-    funList = []
-    history = []
-    while 1:
-        list, error = GetInput(varList, funList, history)
-        if not error:
-            varList, isPrintVar = manageVar(list, varList, funList)
-            if isPrintVar:
+
+    var = {}
+    fun = {}
+    while True:
+        strInput = input('> ')
+        equalCount = strInput.count('=')
+        if equalCount == 0:
+            Parsing = Parser(strInput)
+            if not Parsing.error == "":
+                print(Parsing.error)
                 continue
-            funList, isPrintFun = manageFunction(list, funList, varList)
-            if isPrintFun:
+            if len(Parsing.list) == 0:
                 continue
-            isPrint = manageCalc(list, varList, funList)
-            if isPrint:
+            else:
+                res, error = evaluate(Parsing.list, var, fun)
+                if error:
+                    print('Invalid equation')
+                elif not res == None:
+                    print(res)
+        elif equalCount == 1:
+            strInput = strInput.split('=')
+            ParseOne = Parser(strInput[0])
+            ParseTwo = Parser(strInput[1])
+            if len(ParseOne.list) == 0 or len(ParseTwo.list) == 0:
+                print('Invalid Input')
                 continue
-            print('Invalid input...')
+            if not ParseOne.error == "":
+                print(ParseOne.error)
+                continue
+            if not ParseTwo.error == "":
+                print(ParseTwo.error)
+                continue
+            if len(ParseOne.list) == 1:
+                if ParseOne.list[0].type == 'defFunction' and len(ParseTwo.list) == 2 and ParseTwo.list[-1].value == '?':
+                    print('Calc polynome')
+                elif ParseOne.list[0].type == 'defFunction':
+                    name = ParseOne.list[0].value.split('(')[0]
+                    f = Function(ParseOne.list[0].value, ParseTwo.list)
+                    if f.valid:
+                        fun[name] = f
+                        print(fun[name])
+                    else:
+                        print('Function ' + name + ' is invalid')
+                elif ParseOne.list[0].type == 'var':
+                    res, error = evaluate(ParseTwo.list, var, fun)
+                    if error:
+                        print('Invalid assignement')
+                    elif not res == None:
+                        var[ParseOne.list[0].value] = res
+                        print(res)
+                else:
+                    print('Invalid Input')
+        else:
+            print('Invalid input')
