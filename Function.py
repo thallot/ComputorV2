@@ -1,5 +1,6 @@
 from Parser import *
 from calc import *
+import re
 
 class Function():
     """docstring for Function."""
@@ -8,12 +9,41 @@ class Function():
         self.value = value
         self.var, self.name = self.setFunction(strInput)
         self.valid = self.isValidFunction()
+        self.string = self.getString()
+        self.polynome = self.getPolynome()
 
     def __repr__(self):
+        equation = self.reducedForm()
+        return equation
+
+    def reducedForm(self):
+        equation = self.string.replace(' ', '')
+        regexOp = '[^\^]\d+[\+|\-|\*]\d+[\+|\-|\*\d+]*'
+        while re.findall(regexOp, equation):
+            calc = re.findall(regexOp, equation)
+            for c in calc:
+                if c[0] == '=':
+                    c = c[0:]
+                if not c[len(c)-1].isnumeric():
+                    c = c[:len(c)-1]
+                equation = equation.replace(str(c[1:]) , str(eval(c[1:])))
+        return equation
+
+    def getPolynome(self):
+        equation = self.reducedForm()
+        find = re.findall('[\d+]?[\*]' + self.var + '[\^\d]*', equation)
+        print('>>', find)
+        print('>>', equation)
+        return find
+
+    def getString(self):
         value = str()
         for token in self.value:
-            value += str(token.value)
+            value += " " + str(token.value)
         return self.name + '(' + self.var + ') = ' + value
+
+    def __repr__(self):
+        return self.string
 
     def isValidFunction(self):
         for token in self.value:

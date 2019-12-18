@@ -44,7 +44,7 @@ if __name__ == '__main__':
                     f = Function(ParseOne.list[0].value, ParseTwo.list)
                     if f.valid:
                         fun[name] = f
-                        print(fun[name])
+                        print(fun[name].reducedForm())
                     else:
                         print('Function ' + name + ' is invalid')
                 elif ParseOne.list[0].type == 'var':
