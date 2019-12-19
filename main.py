@@ -10,8 +10,7 @@ if __name__ == '__main__':
     var = {}
     fun = {}
     while True:
-        strInput = input('\033[36m> ').replace(' ', '')
-        print('\033[37m', end='')
+        strInput = input('> ').replace(' ', '')
         if specialInput(strInput, var, fun):
             continue
         strInput, equalCount = checkInput(strInput)
@@ -24,7 +23,7 @@ if __name__ == '__main__':
                 if error:
                     print('\033[31mInvalid equation\033[37m')
                 elif not res == None:
-                    print(res)
+                    print('\033[32m',res,'\033[37m')
         elif equalCount == 1:
             strInput = strInput.split('=')
             ParseOne = Parser(strInput[0])
