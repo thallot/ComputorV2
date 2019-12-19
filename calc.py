@@ -19,7 +19,6 @@ def doOp(a, b, op):
     if op == '%': return a % b
 
 
-
 def evaluate(list, var, fun):
     """ NPR Calc sur la liste du parser """
     values = []
@@ -64,7 +63,8 @@ def evaluate(list, var, fun):
                 val1 = values.pop()
                 op = ops.pop()
                 values.append(doOp(val1, val2, op))
-            ops.pop()
+            if len(ops):
+                ops.pop()
         else:
             while (len(ops) != 0 and
                 precedence(ops[-1]) >= precedence(list[i].value)):

@@ -17,11 +17,11 @@ class Parser():
         for i, token in enumerate(list):
             if i + 2 <= len(list):
                 if list[i].type == 'operator' and list[i + 1].type == 'operator' \
-                and list[i + 2].operand == 1 and list[i + 1].value == '-':
+                and list[i + 2].operand == 1 and list[i + 1].value == '-' and list[i].value == '+':
                     if isinstance(list[i + 2], Number):
                         del list[i + 1]
                         list[i + 1] = Number(str(list[i + 1].value * -1))
-                elif i == 0 and list[i].type == 'operator'and list[i + 1].operand == 1:
+                elif i == 0 and list[i].value == '-' and list[i + 1].operand == 1:
                     if isinstance(list[i + 1], Number):
                         del list[i]
                         list[i] = Number(str(list[i].value * -1))
@@ -41,8 +41,8 @@ class Parser():
         list = []
         error = str()
         while i < len(strInput):
-            if re.match('\d+\*?i[\+\-]?\d+', strInput[i:]):
-                find = re.search('\d+\*?i[\+\-]?\d+', strInput[i:]).group(0)
+            if re.match('\d+\*?i[[\+\-]?[\d+]?]?', strInput[i:]):
+                find = re.search('\d+\*?i[[\+\-]?[\d+]?]?', strInput[i:]).group(0)
                 i += len(find) - 1
                 list.append(Complex(find))
             elif re.match('\d+\.\d+', strInput[i:]):

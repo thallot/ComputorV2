@@ -31,10 +31,13 @@ if __name__ == '__main__':
     var = {}
     fun = {}
     while True:
-        strInput = input('> ')
+        strInput = input('> ').replace(' ', '')
         if specialInput(strInput, var, fun):
             continue
         equalCount = strInput.count('=')
+        if equalCount == 1 and strInput.split('=')[1] == '?':
+            equalCount = 0
+            strInput = strInput.replace('=?', '')
         if equalCount == 0:
             Parsing = Parser(strInput)
             if not Parsing.error == "":
@@ -43,14 +46,11 @@ if __name__ == '__main__':
             if len(Parsing.list) == 0:
                 continue
             else:
-                try:
-                    res, error = evaluate(Parsing.list, var, fun)
-                    if error:
-                        print('Invalid equation')
-                    elif not res == None:
-                        print(res)
-                except:
-                    print('Cannot calculate')
+                res, error = evaluate(Parsing.list, var, fun)
+                if error:
+                    print('Invalid equation')
+                elif not res == None:
+                    print(res)
         elif equalCount == 1:
             strInput = strInput.split('=')
             ParseOne = Parser(strInput[0])

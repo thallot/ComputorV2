@@ -76,16 +76,26 @@ class Complex():
 
     def __pow__(self, other):
         if isinstance(other, N.Number):
-            realPart = other.value ** self.real
-            return Complex(real = realPart, img = self.img)
+            realPart = self.real ** other.value
+            imgPart = self.img
+            if other.value % 2 == 0:
+                imgPart *= -1
+            return Complex(real = realPart, img = imgPart)
         if isinstance(other, Complex):
             realPart = self.real ** other.real
             imgPart = self.img ** other.img
             return Complex(real = realPart, img = imgPart)
 
     def setComplex(self, value, real, img):
+        if not (real == None and img == None):
+            return real, img
+        value = value.replace('*', '').replace('+', '')
         if not value == None:
             part = value.split('i')
+            if part[0] == '':
+                part[0] = 0
+            if part[1] == '':
+                part[1] = 0
             return int(part[1]), int(part[0])
         else:
             return real, img
@@ -94,7 +104,8 @@ class Complex():
         value = str()
         value += str(self.img)
         value += 'i'
-        if self.real >= 0:
+        if self.real > 0:
             value += '+'
-        value += str(self.real)
+        if self.real:
+            value += str(self.real)
         return value
