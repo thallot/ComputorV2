@@ -23,7 +23,7 @@ def assignFunction(ParseOne, ParseTwo, var, fun):
         fun[name] = f
         if f.var in var.keys():
             print('\033[31mWarning : [', f.var, '] is a variable. This can cause unexpected behavior\033[37m')
-        print('\033[32m', fun[name], '\033[37m')
+        print('\033[32mAssignation:', fun[name], '\033[37m')
     else:
         print('\033[31mFunction ' + name + ' is invalid\033[37m')
     return fun
@@ -38,5 +38,5 @@ def assignVar(ParseOne, ParseTwo, var, fun):
                 print('\033[31mWarning : [', ParseOne.list[0].value, '] is a variable of function [', \
                 fun[key], ']\nThis can cause unexpected behavior\033[37m')
         var[ParseOne.list[0].value] = res
-        print('\033[32m', res, '\033[37m')
+        print('\033[32mAssignation:', ParseOne.list[0].value , ' = ', res, '\033[37m')
     return var

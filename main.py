@@ -23,7 +23,7 @@ if __name__ == '__main__':
                 if error:
                     print('\033[31mInvalid equation\033[37m')
                 elif not res == None:
-                    print('\033[32m',res,'\033[37m')
+                    print('\033[32mResult:',res,'\033[37m')
         elif equalCount == 1:
             strInput = strInput.split('=')
             ParseOne = Parser(strInput[0])

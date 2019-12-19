@@ -24,7 +24,7 @@ def doOp(a, b, op):
         if op == '^': return a ** b
         if op == '%': return a % b
     except:
-        print('Cannot calculate')
+        print('\033[31mCannot calculate\033[37m')
         return 0
 
 
