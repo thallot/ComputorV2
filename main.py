@@ -2,6 +2,26 @@ from Parser import *
 from Function import *
 from calc import *
 
+def specialInput(strInput, var, fun):
+    if strInput == '--var':
+        print('__VARIABLES__')
+        for key in var:
+            print(key, '=', var[key])
+        return True
+    if strInput == '--fun':
+        print('__FUNCTIONS__')
+        for key in fun:
+            print(fun[key])
+        return True
+    if strInput == '--all':
+        print('__VARIABLES__')
+        for key in var:
+            print(key, '=', var[key])
+        print('__FUNCTION__')
+        for key in fun:
+            print(fun[key])
+        return True
+    return False
 
 if __name__ == '__main__':
 
@@ -9,6 +29,8 @@ if __name__ == '__main__':
     fun = {}
     while True:
         strInput = input('> ')
+        if specialInput(strInput, var, fun):
+            continue
         equalCount = strInput.count('=')
         if equalCount == 0:
             Parsing = Parser(strInput)
@@ -18,11 +40,14 @@ if __name__ == '__main__':
             if len(Parsing.list) == 0:
                 continue
             else:
-                res, error = evaluate(Parsing.list, var, fun)
-                if error:
-                    print('Invalid equation')
-                elif not res == None:
-                    print(res)
+                try:
+                    res, error = evaluate(Parsing.list, var, fun)
+                    if error:
+                        print('Invalid equation')
+                    elif not res == None:
+                        print(res)
+                except:
+                    print('Cannot calculate')
         elif equalCount == 1:
             strInput = strInput.split('=')
             ParseOne = Parser(strInput[0])
@@ -44,7 +69,7 @@ if __name__ == '__main__':
                     f = Function(ParseOne.list[0].value, ParseTwo.list)
                     if f.valid:
                         fun[name] = f
-                        print(fun[name].reducedForm())
+                        print(fun[name])
                     else:
                         print('Function ' + name + ' is invalid')
                 elif ParseOne.list[0].type == 'var':
