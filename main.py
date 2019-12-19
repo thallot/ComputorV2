@@ -10,7 +10,8 @@ if __name__ == '__main__':
     var = {}
     fun = {}
     while True:
-        strInput = input('> ').replace(' ', '')
+        strInput = input('\033[36m> ').replace(' ', '')
+        print('\033[37m', end='')
         if specialInput(strInput, var, fun):
             continue
         strInput, equalCount = checkInput(strInput)

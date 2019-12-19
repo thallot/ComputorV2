@@ -15,7 +15,7 @@ class Parser():
 
     def solveError(self, list):
         for i, token in enumerate(list):
-            if i + 2 <= len(list):
+            if i + 2 < len(list):
                 if list[i].type == 'operator' and list[i + 1].type == 'operator' \
                 and list[i + 2].operand == 1 and list[i + 1].value == '-' and list[i].value == '+':
                     if isinstance(list[i + 2], Number):

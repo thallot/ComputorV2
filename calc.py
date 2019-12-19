@@ -5,9 +5,9 @@ def precedence(op):
     """ Determine les priorite entre les operateur """
     if op == '+' or op == '-':
         return 1
-    if op == '*' or op == '/' or op == '%' or op == '^':
+    if op == '*' or op == '/' or op == '%':
         return 2
-    if op == '**':
+    if op == '**' or op == '^':
         return 3
     return 0
 
