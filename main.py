@@ -82,6 +82,8 @@ if __name__ == '__main__':
                     f = Function(ParseOne.list[0].value, ParseTwo.list)
                     if f.valid:
                         fun[name] = f
+                        if f.var in var.keys():
+                            print('\033[31mWarning : [', f.var, '] is a variable. This can cause unexpected behavior\033[37m')
                         print(fun[name])
                     else:
                         print('Function ' + name + ' is invalid')
@@ -90,6 +92,10 @@ if __name__ == '__main__':
                     if error:
                         print('Invalid assignement')
                     elif not res == None:
+                        for key in fun:
+                            if fun[key].var == ParseOne.list[0].value:
+                                print('\033[31mWarning : [', ParseOne.list[0].value, '] is a variable of function [', \
+                                fun[key], ']\nThis can cause unexpected behavior\033[37m')
                         var[ParseOne.list[0].value] = res
                         print(res)
                 else:

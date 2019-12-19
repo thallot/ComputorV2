@@ -35,7 +35,7 @@ class Matrice():
 
     def __mul__(self, other):
         if isinstance(other, Matrice):
-            x = str((self.value * other.value).tolist()).replace('],', '];').replace(' ', '')
+            x = str((np.dot(self.value, other.value)).tolist()).replace('],', '];').replace(' ', '')
             return Matrice(x)
         if other.type == 'int' or other.type == 'float':
             x = str((self.value * other.value).tolist()).replace('],', '];').replace(' ', '')
@@ -45,7 +45,7 @@ class Matrice():
 
     def __truediv__(self, other):
         if isinstance(other, Matrice):
-            x = str((self.value / other.value).tolist()).replace('],', '];').replace(' ', '')
+            x = str((np.true_divide(self.value, other.value)).tolist()).replace('],', '];').replace(' ', '')
             return Matrice(x)
         if other.type == 'int' or other.type == 'float':
             x = str((self.value / other.value).tolist()).replace('],', '];').replace(' ', '')
@@ -55,7 +55,7 @@ class Matrice():
 
     def __mod__(self, other):
         if isinstance(other, Matrice):
-            x = str((self.value % other.value).tolist()).replace('],', '];').replace(' ', '')
+            x = str((np.mod(self.value, other.value)).tolist()).replace('],', '];').replace(' ', '')
             return Matrice(x)
         if other.type == 'int' or other.type == 'float':
             x = str((self.value % other.value).tolist()).replace('],', '];').replace(' ', '')

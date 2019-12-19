@@ -7,10 +7,15 @@ def precedence(op):
         return 1
     if op == '*' or op == '/' or op == '%' or op == '^':
         return 2
+    if op == '**':
+        return 3
     return 0
 
 def doOp(a, b, op):
     """ retourne le result a OP b """
+    if not(a.type == 'Matrice' or b.type == 'Matrice') and op == '**':
+        print('Operator ** is only for Matrice')
+        return
     if op == '*' or op == '**': return a * b
     if op == '+': return a + b
     if op == '-': return a - b
