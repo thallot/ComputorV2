@@ -28,7 +28,7 @@ class Matrice():
 
     def __sub__(self, other):
         if isinstance(other, Matrice):
-            x = str((self.value * other.value).tolist()).replace('],', '];').replace(' ', '')
+            x = str((self.value - other.value).tolist()).replace('],', '];').replace(' ', '')
             return Matrice(x)
         else:
             print('Invalid Operation')
