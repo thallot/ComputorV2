@@ -57,26 +57,26 @@ class Parser():
                 find = re.search('[a-zA-Z]+\([a-zA-Z]+\)', strInput[i:]).group(0)
                 i += len(find) -1
                 if 'i' in find:
-                    error = "A function cannot contain i"
+                    error = "\033[31mA function cannot contain i\033[37m"
                 list.append(Element(find, 'defFunction'))
             elif re.match('[a-zA-Z]+\(\d+\)', strInput[i:]):
                 find = re.search('[a-zA-Z]+\(\d+\)', strInput[i:]).group(0)
                 i += len(find) -1
                 if 'i' in find:
-                    error = "A function cannot contain i"
+                    error = "\033[31mA function cannot contain i\033[37m"
                 list.append(Element(find, 'callFunction'))
             elif re.match('[a-zA-Z]+', strInput[i:]):
                 find = re.search('[a-zA-Z]+', strInput[i:]).group(0)
                 i += len(find) - 1
                 if 'i' in find:
-                    error = "A variable cannot contain i"
+                    error = "\033[31mA variable cannot contain i\033[37m"
                 list.append(Element(find, 'var'))
             elif strInput[i] == '[':
                 find = Matrice.getMatrice(strInput[i:])
                 i += len(find) - 1
                 matrice = Matrice(find)
                 if not matrice.valid:
-                    error = "Matrice invalid : " + find
+                    error = "\033[31mInvalid Matrice:\033[37m " + find
                 list.append(matrice)
             elif re.match('\*\*', strInput[i:]):
                 find = re.search('\*\*', strInput[i:]).group(0)
@@ -85,7 +85,7 @@ class Parser():
             elif strInput[i] in '+-*/%^=?()':
                 list.append(Element(strInput[i], 'operator'))
             else:
-                error = "Invalid input : " + strInput[i]
+                error = "\033[31mInvalid input:\033[37m " + strInput[i]
             i += 1
             if not error == "":
                 break

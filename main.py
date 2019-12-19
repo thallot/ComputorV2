@@ -2,29 +2,8 @@ from Parser import *
 from Function import *
 from calc import *
 from computorv1 import *
-
-def specialInput(strInput, var, fun):
-    if strInput == '--var':
-        print('__VARIABLES__')
-        for key in var:
-            print(key, '=', var[key])
-        return True
-    elif strInput == '--fun':
-        print('__FUNCTIONS__')
-        for key in fun:
-            print(fun[key])
-        return True
-    elif strInput == '--all':
-        print('__VARIABLES__')
-        for key in var:
-            print(key, '=', var[key])
-        print('__FUNCTION__')
-        for key in fun:
-            print(fun[key])
-        return True
-    elif strInput =='--quit':
-        exit()
-    return False
+from error import *
+from manage import *
 
 if __name__ == '__main__':
 
@@ -34,71 +13,31 @@ if __name__ == '__main__':
         strInput = input('> ').replace(' ', '')
         if specialInput(strInput, var, fun):
             continue
-        equalCount = strInput.count('=')
-        if equalCount == 1 and strInput.split('=')[1] == '?':
-            equalCount = 0
-            strInput = strInput.replace('=?', '')
+        strInput, equalCount = checkInput(strInput)
         if equalCount == 0:
             Parsing = Parser(strInput)
-            if not Parsing.error == "":
-                print(Parsing.error)
-                continue
-            if len(Parsing.list) == 0:
+            if checkParser(Parsing, None, 1):
                 continue
             else:
                 res, error = evaluate(Parsing.list, var, fun)
                 if error:
-                    print('Invalid equation')
+                    print('\033[31mInvalid equation\033[37m')
                 elif not res == None:
                     print(res)
         elif equalCount == 1:
             strInput = strInput.split('=')
             ParseOne = Parser(strInput[0])
             ParseTwo = Parser(strInput[1])
-            if len(ParseOne.list) == 0 or len(ParseTwo.list) == 0:
-                print('Invalid Input')
-                continue
-            if not ParseOne.error == "":
-                print(ParseOne.error)
-                continue
-            if not ParseTwo.error == "":
-                print(ParseTwo.error)
+            if checkParser(ParseOne, ParseTwo, 2):
                 continue
             if len(ParseOne.list) == 1:
                 if ParseOne.list[0].type == 'defFunction' and len(ParseTwo.list) == 2 and ParseTwo.list[-1].value == '?':
-                    function = None
-                    for key in fun:
-                        if key == ParseOne.list[0].value.split('(')[0]:
-                            function = fun[key]
-                    if not function == None:
-                        if function.validPolynome == True:
-                            calcPolynome(function)
-                        else:
-                            print('Invalid Polynome')
-                    else:
-                        print('This function is not defined')
+                    calculatePolynome(ParseOne, var, fun)
                 elif ParseOne.list[0].type == 'defFunction':
-                    name = ParseOne.list[0].value.split('(')[0]
-                    f = Function(ParseOne.list[0].value, ParseTwo.list)
-                    if f.valid:
-                        fun[name] = f
-                        if f.var in var.keys():
-                            print('\033[31mWarning : [', f.var, '] is a variable. This can cause unexpected behavior\033[37m')
-                        print(fun[name])
-                    else:
-                        print('Function ' + name + ' is invalid')
+                    fun = assignFunction(ParseOne, ParseTwo, var, fun)
                 elif ParseOne.list[0].type == 'var':
-                    res, error = evaluate(ParseTwo.list, var, fun)
-                    if error:
-                        print('Invalid assignement')
-                    elif not res == None:
-                        for key in fun:
-                            if fun[key].var == ParseOne.list[0].value:
-                                print('\033[31mWarning : [', ParseOne.list[0].value, '] is a variable of function [', \
-                                fun[key], ']\nThis can cause unexpected behavior\033[37m')
-                        var[ParseOne.list[0].value] = res
-                        print(res)
+                    var = assignVar(ParseOne, ParseTwo, var, fun)
                 else:
-                    print('Invalid Input')
+                    print('\033[31mInvalid Input\033[37m')
         else:
-            print('Invalid input')
+            print('\033[31mInvalid input :\033[37m Double operator =')

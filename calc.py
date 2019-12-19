@@ -13,15 +13,19 @@ def precedence(op):
 
 def doOp(a, b, op):
     """ retourne le result a OP b """
-    if not(a.type == 'Matrice' or b.type == 'Matrice') and op == '**':
-        print('Operator ** is only for Matrice')
-        return
-    if op == '*' or op == '**': return a * b
-    if op == '+': return a + b
-    if op == '-': return a - b
-    if op == '/': return a / b
-    if op == '^': return a ** b
-    if op == '%': return a % b
+    try:
+        if not(a.type == 'Matrice' or b.type == 'Matrice') and op == '**':
+            print('Operator ** is only for Matrice')
+            return
+        if op == '*' or op == '**': return a * b
+        if op == '+': return a + b
+        if op == '-': return a - b
+        if op == '/': return a / b
+        if op == '^': return a ** b
+        if op == '%': return a % b
+    except:
+        print('Cannot calculate')
+        return 0
 
 
 def evaluate(list, var, fun):
@@ -94,6 +98,6 @@ def evaluate(list, var, fun):
         if (op == '/' or op == '%') and (val2.value == 0):
             return error
         values.append(doOp(val1, val2, op))
-    if len(values) > 1:
+    if len(values) > 1 or len(values) == 0:
         res = None
     return values[-1], 0
