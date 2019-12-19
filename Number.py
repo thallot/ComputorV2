@@ -49,6 +49,11 @@ class Number():
             realPart = self.value / other.real
             imgPart = self.value / other.img
             return Complex(real = realPart, img = imgPart)
+        if isinstance(other, Matrice):
+            x = str((self.value / other.value).tolist()).replace('],', '];').replace(' ', '')
+            return Matrice(x)
+        else:
+            print('Invalid Operation')
 
     def __mod__(self, other):
         if isinstance(other, Number):
@@ -57,12 +62,20 @@ class Number():
             realPart = self.value % other.real
             imgPart = self.value % other.img
             return Complex(real = realPart, img = imgPart)
+        if isinstance(other, Matrice):
+            x = str((self.value % other.value).tolist()).replace('],', '];').replace(' ', '')
+            return Matrice(x)
+        else:
+            print('Invalid Operation')
 
     def __pow__(self, other):
         if isinstance(other, Number):
             return Number(self.value ** other.value)
+        if isinstance(other, Matrice):
+            x = str((self.value ** other.value).tolist()).replace('],', '];').replace(' ', '')
+            return Matrice(x)
         else:
-            print('Invalid operation')
+            print('Invalid Operation')
 
     def setNumber(self, value, type):
         if type == 'float':

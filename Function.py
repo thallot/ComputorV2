@@ -14,8 +14,9 @@ class Function():
         try:
             self.factor = self.getFactor()
             self.polynome = self.getPolynome()
+            self.validPolynome = True
         except:
-            self.valid = False
+            self.validPolynome = False
 
     def __str__(self):
         return self.string

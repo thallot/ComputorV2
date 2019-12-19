@@ -1,6 +1,7 @@
 from Parser import *
 from Function import *
 from calc import *
+from computorv1 import *
 
 def specialInput(strInput, var, fun):
     if strInput == '--var':
@@ -8,12 +9,12 @@ def specialInput(strInput, var, fun):
         for key in var:
             print(key, '=', var[key])
         return True
-    if strInput == '--fun':
+    elif strInput == '--fun':
         print('__FUNCTIONS__')
         for key in fun:
             print(fun[key])
         return True
-    if strInput == '--all':
+    elif strInput == '--all':
         print('__VARIABLES__')
         for key in var:
             print(key, '=', var[key])
@@ -21,6 +22,8 @@ def specialInput(strInput, var, fun):
         for key in fun:
             print(fun[key])
         return True
+    elif strInput =='--quit':
+        exit()
     return False
 
 if __name__ == '__main__':
@@ -63,7 +66,17 @@ if __name__ == '__main__':
                 continue
             if len(ParseOne.list) == 1:
                 if ParseOne.list[0].type == 'defFunction' and len(ParseTwo.list) == 2 and ParseTwo.list[-1].value == '?':
-                    print('Calc polynome')
+                    function = None
+                    for key in fun:
+                        if key == ParseOne.list[0].value.split('(')[0]:
+                            function = fun[key]
+                    if not function == None:
+                        if function.validPolynome == True:
+                            calcPolynome(function)
+                        else:
+                            print('Invalid Polynome')
+                    else:
+                        print('This function is not defined')
                 elif ParseOne.list[0].type == 'defFunction':
                     name = ParseOne.list[0].value.split('(')[0]
                     f = Function(ParseOne.list[0].value, ParseTwo.list)

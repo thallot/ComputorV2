@@ -1,6 +1,7 @@
 import re
 import numpy as np
 import ast
+from Number import *
 
 class Matrice():
     """docvalueing for Matrice."""
@@ -17,6 +18,60 @@ class Matrice():
         for line in self.string:
             result += str(line) + '\n'
         return result[:len(result)-1]
+
+    def __add__(self, other):
+        if isinstance(other, Matrice):
+            x = str((self.value + other.value).tolist()).replace('],', '];').replace(' ', '')
+            return Matrice(x)
+        else:
+            print('Invalid Operation')
+
+    def __sub__(self, other):
+        if isinstance(other, Matrice):
+            x = str((self.value * other.value).tolist()).replace('],', '];').replace(' ', '')
+            return Matrice(x)
+        else:
+            print('Invalid Operation')
+
+    def __mul__(self, other):
+        if isinstance(other, Matrice):
+            x = str((self.value * other.value).tolist()).replace('],', '];').replace(' ', '')
+            return Matrice(x)
+        if other.type == 'int' or other.type == 'float':
+            x = str((self.value * other.value).tolist()).replace('],', '];').replace(' ', '')
+            return Matrice(x)
+        else:
+            print('Invalid Operation')
+
+    def __truediv__(self, other):
+        if isinstance(other, Matrice):
+            x = str((self.value / other.value).tolist()).replace('],', '];').replace(' ', '')
+            return Matrice(x)
+        if other.type == 'int' or other.type == 'float':
+            x = str((self.value / other.value).tolist()).replace('],', '];').replace(' ', '')
+            return Matrice(x)
+        else:
+            print('Invalid Operation')
+
+    def __mod__(self, other):
+        if isinstance(other, Matrice):
+            x = str((self.value % other.value).tolist()).replace('],', '];').replace(' ', '')
+            return Matrice(x)
+        if other.type == 'int' or other.type == 'float':
+            x = str((self.value % other.value).tolist()).replace('],', '];').replace(' ', '')
+            return Matrice(x)
+        else:
+            print('Invalid Operation')
+
+    def __pow__(self, other):
+        if isinstance(other, Matrice):
+            x = str((self.value ** other.value).tolist()).replace('],', '];').replace(' ', '')
+            return Matrice(x)
+        if other.type == 'int' or other.type == 'float':
+            x = str((self.value ** other.value).tolist()).replace('],', '];').replace(' ', '')
+            return Matrice(x)
+        else:
+            print('Invalid Operation')
 
     def isValidMatrice(self, value):
         """ Verifie que la matrice soit bien formate """
