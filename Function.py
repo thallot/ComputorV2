@@ -15,6 +15,7 @@ class Function():
         if self.otherVar:
             Parsing = Parser(self.normalizeFunction().split('=')[1])
             self.value = Parsing.list
+            self.validPolynome = False
         else:
             self.validPolynome = True
             self.factor = self.getFactor()
@@ -25,6 +26,7 @@ class Function():
             else:
                 Parsing = Parser(self.normalizeFunction().split('=')[1])
                 self.value = Parsing.list
+                self.validPolynome = False
 
     def __str__(self):
         return self.string.replace('1 *', '')
