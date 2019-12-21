@@ -17,7 +17,7 @@ class Parser():
         for i, token in enumerate(list):
             if i + 2 < len(list):
                 if list[i].type == 'operator' and list[i + 1].type == 'operator' \
-                and list[i + 2].operand == 1 and list[i + 1].value == '-' and list[i].value == '+':
+                and list[i + 2].operand == 1 and list[i + 1].value == '-':
                     if isinstance(list[i + 2], Number):
                         del list[i + 1]
                         list[i + 1] = Number(str(list[i + 1].value * -1))
@@ -59,8 +59,8 @@ class Parser():
                 if 'i' in find:
                     error = "\033[31mA function cannot contain i\033[37m"
                 list.append(Element(find, 'defFunction'))
-            elif re.match('[a-zA-Z]+\(\d+\)', strInput[i:]):
-                find = re.search('[a-zA-Z]+\(\d+\)', strInput[i:]).group(0)
+            elif re.match('[a-zA-Z]+\(\-?\d+\)', strInput[i:]):
+                find = re.search('[a-zA-Z]+\(\-?\d+\)', strInput[i:]).group(0)
                 i += len(find) -1
                 if 'i' in find:
                     error = "\033[31mA function cannot contain i\033[37m"
