@@ -29,7 +29,7 @@ class Function():
         for token in self.value:
             if token.type == 'var' and self.var != token.value:
                 return True
-            elif token.type == 'Matrice' or token.type == 'Complex':
+            elif token.type == 'Matrice' or token.type == 'Complex' or token.type == 'defFunction':
                 return True
         return False
 
