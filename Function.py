@@ -27,7 +27,7 @@ class Function():
                 self.value = Parsing.list
 
     def __str__(self):
-        return self.string
+        return self.string.replace('1 *', '')
 
     def getOtherVar(self):
         for token in self.value:
@@ -75,7 +75,8 @@ class Function():
     def getFactor(self):
         """ retourne la liste des variable en liste de la forme ['2X[0]', '5X[2]'] """
         equation = self.normalizeFunction()
-        find = re.findall('\d+[\.\d+]*\*' + self.var + '[\^\d]*', equation)
+        find = re.findall('\d+[\.\d+]+\*' + self.var + '[\^\d]*', equation)
+        print(find)
         test = equation
         for i, token in enumerate(find):
             nb = token.split('*')[0]
@@ -86,10 +87,10 @@ class Function():
                 power = 1
             test = test.replace(token, str(nb) + 'X|' + str(power) + '|')
         test = self.reducedForm(test)
-        find = re.findall('[\-]?\d+[\.\d+]*X\|\d+\|\*[\-]?\d+[\.\d+]*X\|\d+\|', test)
+        find = re.findall('[\-]?\d+[\.\d+]+X\|\d+\|\*[\-]?\d+[\.\d+]*X\|\d+\|', test)
         if find:
             self.validPolynome = False
-        find = re.findall('[\-]?\d+[\.\d+]*X\|\d+\|', test)
+        find = re.findall('[\-|\+]?\d+[\.\d+]+X\|\d+\|', test)
         for i, token in enumerate(find):
             test = test.replace(token, '')
         test = test.split('=')[1]
@@ -97,6 +98,7 @@ class Function():
             self.validPolynome = False
         if len(test) >= 1 and not (len(test) == 1 and (test == '+' or test == '-')):
             test = self.reducedForm(test, 2)
+
             find.append(test + 'X|0|')
         return find
 
