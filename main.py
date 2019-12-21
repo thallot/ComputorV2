@@ -13,13 +13,13 @@ if __name__ == '__main__':
         strInput = input('> ').replace(' ', '')
         if specialInput(strInput, var, fun):
             continue
-        strInput, equalCount = checkInput(strInput)
+        strInput, equalCount, calc = checkInput(strInput)
         if equalCount == 0:
             Parsing = Parser(strInput)
             if checkParser(Parsing, None, 1):
                 continue
             if len(Parsing.list) == 1 and Parsing.list[0].type == 'defFunction':
-                printFunction(Parsing, var, fun)
+                printFunction(Parsing, var, fun, calc)
             elif len(Parsing.list) == 1 and Parsing.list[0].type == 'var':
                 printVar(Parsing, var, fun)
             else:

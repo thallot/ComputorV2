@@ -44,12 +44,12 @@ def assignVar(ParseOne, ParseTwo, var, fun):
         print('\033[31mInvalid assignement\033[37m')
     return var
 
-def printFunction(Parsing, var, fun):
+def printFunction(Parsing, var, fun, calc):
     explode = Parsing.list[0].value.split('(')
     name = explode[0]
     funVar = explode[1].replace(')', '')
     if name in fun.keys():
-        if funVar == fun[name].var:
+        if funVar == fun[name].var and not (funVar in var.keys()):
             print('\033[32mFunction:', fun[name],'\033[37m')
         else:
             try:

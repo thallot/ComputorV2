@@ -21,7 +21,7 @@ class Parser():
                     if isinstance(list[i + 2], Number):
                         del list[i + 1]
                         list[i + 1] = Number(str(list[i + 1].value * -1))
-            elif i == 0 and list[i].value == '-' and list[i + 1].operand == 1:
+            elif i + 1 < len(list) and i == 0 and list[i].value == '-' and list[i + 1].operand == 1:
                 if isinstance(list[i + 1], Number):
                     del list[i]
                     list[i] = Number(str(list[i].value * -1))

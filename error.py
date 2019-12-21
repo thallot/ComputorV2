@@ -27,13 +27,15 @@ def specialInput(strInput, var, fun):
     return False
 
 def checkInput(strInput):
+    calc = 0
     if '--all' in strInput or '--var' in strInput or '--fun' in strInput or '--quit' in strInput:
         return '', 0
     equalCount = strInput.count('=')
     if equalCount == 1 and strInput.split('=')[1] == '?':
         equalCount = 0
         strInput = strInput.replace('=?', '')
-    return strInput, equalCount
+        calc = 1
+    return strInput, equalCount, calc
 
 def checkParser(ParseOne, ParseTwo, nbr):
     if nbr >= 1 and not ParseOne.error == "":
