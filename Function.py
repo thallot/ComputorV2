@@ -16,11 +16,15 @@ class Function():
             Parsing = Parser(self.normalizeFunction().split('=')[1])
             self.value = Parsing.list
         else:
-            self.factor = self.getFactor()
-            self.polynome = self.getPolynome()
-            self.value = self.getValue()
-            self.string = self.getStringTwo()
             self.validPolynome = True
+            self.factor = self.getFactor()
+            if self.validPolynome:
+                self.polynome = self.getPolynome()
+                self.value = self.getValue()
+                self.string = self.getStringTwo()
+            else:
+                Parsing = Parser(self.normalizeFunction().split('=')[1])
+                self.value = Parsing.list
 
     def __str__(self):
         return self.string
@@ -62,6 +66,10 @@ class Function():
         for token in find:
             newToken = token.replace(self.var, '1*' + self.var)
             equation = equation.replace(token, newToken)
+        find = re.findall(self.var + '[\*]' + self.var, equation)
+        for token in find:
+            newToken = token.replace(self.var + '*' + self.var, self.var + '^2')
+            equation = equation.replace(token, newToken)
         return equation
 
     def getFactor(self):
@@ -78,10 +86,15 @@ class Function():
                 power = 1
             test = test.replace(token, str(nb) + 'X|' + str(power) + '|')
         test = self.reducedForm(test)
+        find = re.findall('[\-]?\d+[\.\d+]*X\|\d+\|\*[\-]?\d+[\.\d+]*X\|\d+\|', test)
+        if find:
+            self.validPolynome = False
         find = re.findall('[\-]?\d+[\.\d+]*X\|\d+\|', test)
         for i, token in enumerate(find):
             test = test.replace(token, '')
         test = test.split('=')[1]
+        if self.var in test:
+            self.validPolynome = False
         if len(test) >= 1 and not (len(test) == 1 and (test == '+' or test == '-')):
             test = self.reducedForm(test, 2)
             find.append(test + 'X|0|')

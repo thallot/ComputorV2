@@ -20,6 +20,8 @@ if __name__ == '__main__':
                 continue
             if len(Parsing.list) == 1 and Parsing.list[0].type == 'defFunction':
                 name = Parsing.list[0].value.split('(')[0]
+                
+                print(name, var)
                 if name in fun.keys():
                     print('\033[32mFunction:', fun[name],'\033[37m')
                 else:
