@@ -14,7 +14,7 @@ class Complex():
 
     def __add__(self, other):
         if isinstance(other, N.Number):
-            realPart = other.value + self.real
+            realPart = self.real + other.value
             return Complex(real = realPart, img = self.img)
         if isinstance(other, Complex):
             realPart = self.real + other.real
@@ -26,7 +26,7 @@ class Complex():
 
     def __sub__(self, other):
         if isinstance(other, N.Number):
-            realPart = other.value - self.real
+            realPart = self.real - other.value
             return Complex(real = realPart, img = self.img)
         if isinstance(other, Complex):
             realPart = self.real - other.real

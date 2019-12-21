@@ -41,8 +41,8 @@ class Parser():
         list = []
         error = str()
         while i < len(strInput):
-            if re.match('\d+\*?i[[\+\-]?[\d+]?]?', strInput[i:]):
-                find = re.search('\d+\*?i[[\+\-]?[\d+]?]?', strInput[i:]).group(0)
+            if re.match('\d+[\.\d+]?\*?i', strInput[i:]):
+                find = re.search('\d+[\.\d+]?\*?i', strInput[i:]).group(0)
                 i += len(find) - 1
                 list.append(Complex(find))
             elif re.match('\d+\.\d+', strInput[i:]):
