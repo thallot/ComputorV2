@@ -37,7 +37,7 @@ def evaluate(list, var, fun):
 
     while i < len(list):
         if list[i].type == 'var':
-            if list[i].value in var.keys():
+            if list[i].value in var.keys() and list[i].type != 'Matrice':
                 list[i] = var[list[i].value]
             else:
                 return error

@@ -18,6 +18,18 @@ if __name__ == '__main__':
             Parsing = Parser(strInput)
             if checkParser(Parsing, None, 1):
                 continue
+            if len(Parsing.list) == 1 and Parsing.list[0].type == 'defFunction':
+                name = Parsing.list[0].value.split('(')[0]
+                if name in fun.keys():
+                    print('\033[32mFunction:', fun[name],'\033[37m')
+                else:
+                    print('\033[31mFunction', name, 'is not defined\033[37m')
+            elif len(Parsing.list) == 1 and Parsing.list[0].type == 'var':
+                name = Parsing.list[0].value
+                if name in var.keys():
+                    print('\033[32mVariable:', var[name],'\033[37m')
+                else:
+                    print('\033[31mVariable', name, 'is not defined\033[37m')
             else:
                 try:
                     res, error = evaluate(Parsing.list, var, fun)

@@ -11,18 +11,27 @@ class Function():
         self.var, self.name = self.setFunction(strInput)
         self.valid = self.isValidFunction()
         self.string = self.getString()
-        try:
+        self.otherVar = self.getOtherVar()
+        if self.otherVar:
+            Parsing = Parser(self.normalizeFunction().split('=')[1])
+            self.value = Parsing.list
+        else:
             self.factor = self.getFactor()
             self.polynome = self.getPolynome()
             self.value = self.getValue()
             self.string = self.getStringTwo()
             self.validPolynome = True
-        except:
-            self.validPolynome = False
-
 
     def __str__(self):
         return self.string
+
+    def getOtherVar(self):
+        for token in self.value:
+            if token.type == 'var' and self.var != token.value:
+                return True
+            elif token.type == 'Matrice' or token.type == 'Complex':
+                return True
+        return False
 
     def formalize(self):
         equation = self.string.replace(' ', '')
@@ -43,10 +52,12 @@ class Function():
         return equation
 
     def normalizeFunction(self):
-        """ Remplace les nbX par nb * X et les X par 1*X"""
+        """ Remplace les nb X par nb * X | les X par 1*X | les X * nb par nb * X"""
         equation = self.string.replace(' ', '')
         for i in range(0,9):
             equation = equation.replace(str(i) + self.var, str(i) + '*' + self.var)
+        for i in range(0,9):
+            equation = equation.replace(self.var + '*' + str(i), str(i) + '*' + self.var)
         find = re.findall('[\+|\-|\=]' + self.var, equation)
         for token in find:
             newToken = token.replace(self.var, '1*' + self.var)
@@ -126,6 +137,8 @@ class Function():
         return equation
 
     def getValue(self):
+        if self.otherVar:
+            return self.value
         element, maxDegree = self.polynome
         degree = sorted(element)
         equation = str()
