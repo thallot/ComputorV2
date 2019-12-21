@@ -40,3 +40,39 @@ def assignVar(ParseOne, ParseTwo, var, fun):
         var[ParseOne.list[0].value] = res
         print('\033[32mAssignation:', ParseOne.list[0].value , ' = ', res, '\033[37m')
     return var
+
+def printFunction(Parsing, var, fun):
+    explode = Parsing.list[0].value.split('(')
+    name = explode[0]
+    funVar = explode[1].replace(')', '')
+    if name in fun.keys():
+        if funVar == fun[name].var:
+            print('\033[32mFunction:', fun[name],'\033[37m')
+        else:
+            try:
+                res, error = evaluate(Parsing.list, var, fun)
+                if error:
+                    print('\033[31mInvalid equation\033[37m')
+                elif not res == None:
+                    print('\033[32mResult:',res,'\033[37m')
+            except:
+                print('\033[31mInvalid equation\033[37m')
+    else:
+        print('\033[31mFunction', name, 'is not defined\033[37m')
+
+def printVar(Parsing, var, fun):
+    name = Parsing.list[0].value
+    if name in var.keys():
+        print('\033[32mVariable:', var[name],'\033[37m')
+    else:
+        print('\033[31mVariable', name, 'is not defined\033[37m')
+
+def doCalc(Parsing, var, fun):
+    try:
+        res, error = evaluate(Parsing.list, var, fun)
+        if error:
+            print('\033[31mInvalid equation\033[37m')
+        elif not res == None:
+            print('\033[32mResult:',res,'\033[37m')
+    except:
+        print('\033[31mInvalid equation\033[37m')

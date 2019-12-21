@@ -19,28 +19,11 @@ if __name__ == '__main__':
             if checkParser(Parsing, None, 1):
                 continue
             if len(Parsing.list) == 1 and Parsing.list[0].type == 'defFunction':
-                name = Parsing.list[0].value.split('(')[0]
-                
-                print(name, var)
-                if name in fun.keys():
-                    print('\033[32mFunction:', fun[name],'\033[37m')
-                else:
-                    print('\033[31mFunction', name, 'is not defined\033[37m')
+                printFunction(Parsing, var, fun)
             elif len(Parsing.list) == 1 and Parsing.list[0].type == 'var':
-                name = Parsing.list[0].value
-                if name in var.keys():
-                    print('\033[32mVariable:', var[name],'\033[37m')
-                else:
-                    print('\033[31mVariable', name, 'is not defined\033[37m')
+                printVar(Parsing, var, fun)
             else:
-                try:
-                    res, error = evaluate(Parsing.list, var, fun)
-                    if error:
-                        print('\033[31mInvalid equation\033[37m')
-                    elif not res == None:
-                        print('\033[32mResult:',res,'\033[37m')
-                except:
-                    print('\033[31mInvalid equation\033[37m')
+                doCalc(Parsing, var, fun)
         elif equalCount == 1:
             strInput = strInput.split('=')
             ParseOne = Parser(strInput[0])
