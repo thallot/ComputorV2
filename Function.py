@@ -14,9 +14,12 @@ class Function():
         try:
             self.factor = self.getFactor()
             self.polynome = self.getPolynome()
+            self.value = self.getValue()
+            self.string = self.getStringTwo()
             self.validPolynome = True
         except:
             self.validPolynome = False
+
 
     def __str__(self):
         return self.string
@@ -39,11 +42,20 @@ class Function():
                 equation = equation.replace(str(c[1:]) , str(eval(c[1:])))
         return equation
 
-    def getFactor(self):
-        """ retourne la liste des variable en liste sous forme de ['2X[0]', '5X[2]'] """
+    def normalizeFunction(self):
+        """ Remplace les nbX par nb * X et les X par 1*X"""
         equation = self.string.replace(' ', '')
         for i in range(0,9):
             equation = equation.replace(str(i) + self.var, str(i) + '*' + self.var)
+        find = re.findall('[\+|\-|\=]' + self.var, equation)
+        for token in find:
+            newToken = token.replace(self.var, '1*' + self.var)
+            equation = equation.replace(token, newToken)
+        return equation
+
+    def getFactor(self):
+        """ retourne la liste des variable en liste de la forme ['2X[0]', '5X[2]'] """
+        equation = self.normalizeFunction()
         find = re.findall('\d+[\.\d+]*\*' + self.var + '[\^\d]*', equation)
         test = equation
         for i, token in enumerate(find):
@@ -53,39 +65,16 @@ class Function():
                 power = power[1]
             else:
                 power = 1
-            test = test.replace(token, str(nb) + 'X[' + str(power) + ']')
+            test = test.replace(token, str(nb) + 'X|' + str(power) + '|')
         test = self.reducedForm(test)
-        find = re.findall('[\-]?\d+[\.\d+]*?X\[\d+\]', test)
+        find = re.findall('[\-]?\d+[\.\d+]*X\|\d+\|', test)
         for i, token in enumerate(find):
             test = test.replace(token, '')
         test = test.split('=')[1]
         if len(test) >= 1 and not (len(test) == 1 and (test == '+' or test == '-')):
             test = self.reducedForm(test, 2)
-            find.append(test + 'X[0]')
+            find.append(test + 'X|0|')
         return find
-
-    def getPolynome(self):
-        """ retourne le degre max et une liste contenant a b et c pour le calcul de polynome """
-        MaxDegree = -1
-        factor = [0, 0, 0]
-        for token in self.factor:
-            nb = token.split('X')[0]
-            if nb == '':
-                continue
-            elif nb[0].isnumeric() or nb[0] == '-':
-                nb = float(nb)
-            else:
-                nb = 1
-            degree = float(token.split('X')[1].replace('[', '').replace(']', ''))
-            if degree == 0:
-                factor[0] += nb
-            elif degree == 1:
-                factor[1] += nb
-            elif degree == 2:
-                factor[2] += nb
-            if degree > MaxDegree:
-                MaxDegree = degree
-        return factor, MaxDegree
 
     def getString(self):
         value = str()
@@ -110,6 +99,52 @@ class Function():
         var = strInput[1].replace(')', '')
         return var, name
 
+    def getPolynome(self):
+        """ Genere un dict avec en cle le degree et en value la valeur du polynome"""
+        list = self.factor
+        equation = str()
+        element = {}
+        maxDegree = - 1
+        for token in list:
+            tmp = token.split('X')
+            tmp[0] = tmp[0].replace('+', '')
+            tmp[1] = tmp[1].replace('|', '')
+            if re.match('\-?\d+[\.\d+]?', tmp[0]):
+                if tmp[1] in element:
+                    element[tmp[1]] += float(tmp[0])
+                else:
+                    element[tmp[1]] = float(tmp[0])
+            if maxDegree < int(tmp[1]):
+                maxDegree = int(tmp[1])
+        return element, maxDegree
+
+    def getStringTwo(self):
+        equation = str()
+        for token in self.value:
+            equation += ' ' + str(token)
+        equation = self.name + '(' + self.var + ') = ' + equation
+        return equation
+
+    def getValue(self):
+        element, maxDegree = self.polynome
+        degree = sorted(element)
+        equation = str()
+        cpt = 0
+        for i in degree:
+            if element[i] == 0:
+                continue
+            elif element[i] > 0 and cpt > 0:
+                element[i] = '+' + str(element[i])
+            if int(i) > 1:
+                equation += str(element[i]) + '*' + self.var + '^' + str(i)
+            elif int(i) == 1:
+                equation += str(element[i]) + '*' + self.var
+            elif int(i) == 0:
+                equation += str(element[i])
+            cpt += 1
+        Parsing = Parser(equation)
+        return Parsing.list
+
     def calc(self, nb, var, fun):
         value = str()
         for token in self.value:
@@ -118,7 +153,7 @@ class Function():
         Parsing = Parser(value)
         if len(Parsing.list) == 0 or Parsing.error != "":
             error = 1
-            res = 0
+            res = None
         else:
             res, error = evaluate(Parsing.list, var, fun)
         return res, error

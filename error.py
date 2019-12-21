@@ -7,20 +7,20 @@ def specialInput(strInput, var, fun):
     if strInput == '--var':
         print('__VARIABLES__')
         for key in var:
-            print(key, '=', var[key])
+            print(' ', key, '=', var[key])
         return True
     elif strInput == '--fun':
         print('__FUNCTIONS__')
         for key in fun:
-            print(fun[key])
+            print(' ', fun[key])
         return True
     elif strInput == '--all':
         print('__VARIABLES__')
         for key in var:
-            print(key, '=', var[key])
+            print(' ', key, '=', var[key])
         print('__FUNCTION__')
         for key in fun:
-            print(fun[key])
+            print(' ', fun[key])
         return True
     elif strInput =='--quit':
         exit()

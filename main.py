@@ -19,11 +19,14 @@ if __name__ == '__main__':
             if checkParser(Parsing, None, 1):
                 continue
             else:
-                res, error = evaluate(Parsing.list, var, fun)
-                if error:
+                try:
+                    res, error = evaluate(Parsing.list, var, fun)
+                    if error:
+                        print('\033[31mInvalid equation\033[37m')
+                    elif not res == None:
+                        print('\033[32mResult:',res,'\033[37m')
+                except:
                     print('\033[31mInvalid equation\033[37m')
-                elif not res == None:
-                    print('\033[32mResult:',res,'\033[37m')
         elif equalCount == 1:
             strInput = strInput.split('=')
             ParseOne = Parser(strInput[0])

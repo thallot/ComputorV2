@@ -5,9 +5,18 @@ def calcPolynome(function):
     values, MaxDegree = function.getPolynome()
     verbose = 0
     display = 0
-    a = values[2]
-    b = values[1]
-    c = values[0]
+    if '2' in values:
+        a = values['2']
+    else:
+        a = 0
+    if '1' in values:
+        b = values['1']
+    else:
+        b = 0
+    if '0' in values:
+        c = values['0']
+    else:
+        c = 0
     if MaxDegree == -2:
         print("\033[32mAll reel numbers are solution ( ∀ x ∈ ℝ  x est solution)\033[37m")
         exit()
@@ -21,7 +30,7 @@ def calcPolynome(function):
         else:
             print('\033[32mNo solution\033[37m')
     elif MaxDegree == 1:
-        print('\033[32mThe solution is:\033[37m')
+        print('The solution is:')
         if b == 0 and c != 0:
             print("\033[32mNo solution\033[37m")
         elif b == 0 and c == 0:
@@ -32,7 +41,7 @@ def calcPolynome(function):
                 print("     Result = -( " + str(c) + " / " + str(b) + ")")
                 print("     Result = " + str(c/b * -1))
             else:
-                print(c/b * -1)
+                print('\033[32m', c/b * -1, '\033[37m')
         if display == 1:
             Display(values)
     elif MaxDegree == 2:
