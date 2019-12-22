@@ -79,7 +79,7 @@ class Number():
 
     def setNumber(self, value, type):
         if type == 'float':
-            value = float(value)
+            value = round(float(value),7)
             if value % 1 == 0:
                 value = int(value)
                 type = 'int'

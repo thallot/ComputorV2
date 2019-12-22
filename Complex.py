@@ -114,10 +114,16 @@ class Complex():
 
     def setValue(self):
         value = str()
-        value += str(self.img)
+        if self.img % 1 == 0:
+            value += str(int(self.img))
+        else:
+            value += str(self.img)
         value += 'i'
         if self.real > 0:
             value += '+'
         if self.real:
-            value += str(self.real)
+            if self.real % 1 == 0:
+                value += str(int(self.real))
+            else:
+                value += str(round(self.real, 7))
         return value

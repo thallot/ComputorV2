@@ -6,7 +6,7 @@ from computorv1 import *
 def checkInput(strInput):
     calc = 0
     if '--all' in strInput or '--var' in strInput or '--fun' in strInput or '--quit' in strInput:
-        return '', 0
+        return '', 0, 0
     equalCount = strInput.count('=')
     if equalCount == 1 and strInput.split('=')[1] == '?':
         equalCount = 0

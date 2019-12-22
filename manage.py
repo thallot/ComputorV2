@@ -5,22 +5,30 @@ from computorv1 import *
 
 def specialInput(strInput, var, fun):
     if strInput == '--var':
-        print('\033[4mVARIABLES :\033[0m')
+        print('\033[1m| \033[4mVARIABLES :\033[0m')
+        if len(var) == 0:
+            print('| \033[93m  No variable defined\033[0m')
         for key in var:
-            print('\033[93m ', key, '=', var[key], '\033[0m')
+            print('| \033[93m ', key, '=', var[key], '\033[0m')
         return True
     elif strInput == '--fun':
-        print('\033[4mFUNCTIONS :\033[0m')
+        print('\033[1m| \033[4mFUNCTIONS :\033[0m')
+        if len(fun) == 0:
+            print('| \033[93m  No function defined\033[0m')
         for key in fun:
-            print('\033[93m ', fun[key], '\033[0m')
+            print('| \033[93m ', fun[key], '\033[0m')
         return True
     elif strInput == '--all':
-        print('\033[4mVARIABLES :\033[0m')
+        print('\033[1m| \033[4mVARIABLES :\033[0m')
+        if len(var) == 0:
+            print('| \033[93m  No variable defined\033[0m')
         for key in var:
-            print('\033[93m ', key, '=', var[key], '\033[0m')
-        print('\033[4mFUNCTIONS :\033[0m')
+            print('| \033[93m ', key, '=', var[key], '\033[0m')
+        print('\033[1m| \033[4mFUNCTIONS :\033[0m')
+        if len(fun) == 0:
+            print('| \033[93m  No function defined\033[0m')
         for key in fun:
-            print('\033[93m ', fun[key], '\033[0m')
+            print('| \033[93m ', fun[key], '\033[0m')
         return True
     elif strInput =='--quit':
         exit()
