@@ -34,7 +34,7 @@ class Function():
                 if token.value in var.keys():
                     toPrint += str(var[token.value])
                 else:
-                    return "\033[31mUnknonw variable ["+ str(token.value) +"]\033[0m"
+                    return "\033[31mUnknown variable ["+ str(token.value) +"]\033[0m"
             else:
                 toPrint += str(token.value)
         return toPrint
