@@ -13,8 +13,6 @@ class Function():
         self.string = self.getString()
         self.otherVar = self.getOtherVar()
         if self.otherVar:
-            Parsing = Parser(self.normalizeFunction().split('=')[1])
-            self.value = Parsing.list
             self.validPolynome = False
         else:
             self.validPolynome = True
@@ -24,12 +22,22 @@ class Function():
                 self.value = self.getValue()
                 self.string = self.getStringTwo()
             else:
-                Parsing = Parser(self.normalizeFunction().split('=')[1])
-                self.value = Parsing.list
                 self.validPolynome = False
 
     def __str__(self):
         return self.string.replace('1 *', '')
+
+    def actualValue(self, var):
+        toPrint = str()
+        for token in self.value:
+            if token.type == 'var' and self.var != token.value:
+                if token.value in var.keys():
+                    toPrint += str(var[token.value])
+                else:
+                    return "\033[31mUnknonw variable ["+ str(token.value) +"]\033[0m"
+            else:
+                toPrint += str(token.value)
+        return toPrint
 
     def getOtherVar(self):
         for token in self.value:
@@ -78,7 +86,6 @@ class Function():
         """ retourne la liste des variable en liste de la forme ['2X[0]', '5X[2]'] """
         equation = self.normalizeFunction()
         find = re.findall('\d+[\.\d+]+\*' + self.var + '[\^\d]*', equation)
-        print(find)
         test = equation
         for i, token in enumerate(find):
             nb = token.split('*')[0]

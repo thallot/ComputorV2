@@ -23,6 +23,8 @@ class Complex():
                 return Complex(real = realPart, img = imgPart)
             else:
                 return N.Number(realPart)
+        else:
+            print('\033[31mInvalid operation [+] between', self.type, 'and', other.type, '\033[0m')
 
     def __sub__(self, other):
         if isinstance(other, N.Number):
@@ -35,6 +37,8 @@ class Complex():
                 return Complex(real = realPart, img = imgPart)
             else:
                 return N.Number(realPart)
+        else:
+            print('\033[31mInvalid operation [-] between', self.type, 'and', other.type, '\033[0m')
 
     def __mul__(self, other):
         if isinstance(other, N.Number):
@@ -48,6 +52,8 @@ class Complex():
                 return Complex(real = realPart, img = imgPart)
             else:
                 return N.Number(realPart)
+        else:
+            print('\033[31mInvalid operation [*] between', self.type, 'and', other.type, '\033[0m')
 
     def __truediv__(self, other):
         if isinstance(other, N.Number):
@@ -61,6 +67,8 @@ class Complex():
                 return Complex(real = realPart, img = imgPart)
             else:
                 return N.Number(realPart)
+        else:
+            print('\033[31mInvalid operation [/] between', self.type, 'and', other.type, '\033[0m')
 
     def __mod__(self, other):
         if isinstance(other, N.Number):
@@ -73,6 +81,8 @@ class Complex():
                 return Complex(real = realPart, img = imgPart)
             else:
                 return N.Number(realPart)
+        else:
+            print('\033[31mInvalid operation [%] between', self.type, 'and', other.type, '\033[0m')
 
     def __pow__(self, other):
         if isinstance(other, N.Number):
@@ -85,6 +95,8 @@ class Complex():
             realPart = self.real ** other.real
             imgPart = self.img ** other.img
             return Complex(real = realPart, img = imgPart)
+        else:
+            print('\033[31mInvalid operation [^] between', self.type, 'and', other.type, '\033[0m')
 
     def setComplex(self, value, real, img):
         if not (real == None and img == None):
@@ -93,10 +105,10 @@ class Complex():
         if not value == None:
             part = value.split('i')
             if part[0] == '':
-                part[0] = 0
+                part[0] = 1
             if part[1] == '':
                 part[1] = 0
-            return int(part[1]), int(part[0])
+            return float(part[1]), float(part[0])
         else:
             return real, img
 

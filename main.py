@@ -38,6 +38,6 @@ if __name__ == '__main__':
                 elif ParseOne.list[0].type == 'var':
                     var = assignVar(ParseOne, ParseTwo, var, fun)
                 else:
-                    print('\033[31mInvalid Input\033[37m')
+                    print('\033[31mInvalid Input\033[0m')
         else:
-            print('\033[31mInvalid input :\033[37m Double operator =')
+            print('\033[31mInvalid input :\033[0m Double operator =')

@@ -3,29 +3,6 @@ from Function import *
 from calc import *
 from computorv1 import *
 
-def specialInput(strInput, var, fun):
-    if strInput == '--var':
-        print('__VARIABLES__')
-        for key in var:
-            print(' ', key, '=', var[key])
-        return True
-    elif strInput == '--fun':
-        print('__FUNCTIONS__')
-        for key in fun:
-            print(' ', fun[key])
-        return True
-    elif strInput == '--all':
-        print('__VARIABLES__')
-        for key in var:
-            print(' ', key, '=', var[key])
-        print('__FUNCTION__')
-        for key in fun:
-            print(' ', fun[key])
-        return True
-    elif strInput =='--quit':
-        exit()
-    return False
-
 def checkInput(strInput):
     calc = 0
     if '--all' in strInput or '--var' in strInput or '--fun' in strInput or '--quit' in strInput:
@@ -45,6 +22,6 @@ def checkParser(ParseOne, ParseTwo, nbr):
         print(ParseTwo.error)
         return True
     if len(ParseOne.list) == 0 or ( nbr >= 2 and len(ParseTwo.list) == 0):
-        print('\033[31mInvalid Input\033[37m')
+        print('\033[31mInvalid Input\033[0m')
         return True
     return False

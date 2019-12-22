@@ -18,7 +18,7 @@ class Number():
             realPart = self.value + other.real
             return Complex(real = realPart, img = other.img)
         else:
-            print('Invalid operation')
+            print('\033[31mInvalid operation [+] between', self.type, 'and', other.type, '\033[0m')
 
     def __sub__(self, other):
         if isinstance(other, Number):
@@ -27,7 +27,7 @@ class Number():
             realPart = self.value - other.real
             return Complex(real = realPart, img = other.img)
         else:
-            print('Invalid Operation')
+            print('\033[31mInvalid operation [-] between', self.type, 'and', other.type, '\033[0m')
 
     def __mul__(self, other):
         if isinstance(other, Number):
@@ -40,7 +40,7 @@ class Number():
             x = str((self.value * other.value).tolist()).replace('],', '];').replace(' ', '')
             return Matrice(x)
         else:
-            print('Invalid Operation')
+            print('\033[31mInvalid operation [*] between', self.type, 'and', other.type, '\033[0m')
 
     def __truediv__(self, other):
         if isinstance(other, Number):
@@ -53,7 +53,7 @@ class Number():
             x = str((self.value / other.value).tolist()).replace('],', '];').replace(' ', '')
             return Matrice(x)
         else:
-            print('Invalid Operation')
+            print('\033[31mInvalid operation [/] between', self.type, 'and', other.type, '\033[0m')
 
     def __mod__(self, other):
         if isinstance(other, Number):
@@ -66,7 +66,7 @@ class Number():
             x = str((self.value % other.value).tolist()).replace('],', '];').replace(' ', '')
             return Matrice(x)
         else:
-            print('Invalid Operation')
+            print('\033[31mInvalid operation [%] between', self.type, 'and', other.type, '\033[0m')
 
     def __pow__(self, other):
         if isinstance(other, Number):
@@ -75,7 +75,7 @@ class Number():
             x = str((self.value ** other.value).tolist()).replace('],', '];').replace(' ', '')
             return Matrice(x)
         else:
-            print('Invalid Operation')
+            print('\033[31mInvalid operation [^] between', self.type, 'and', other.type, '\033[0m')
 
     def setNumber(self, value, type):
         if type == 'float':

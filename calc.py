@@ -24,8 +24,8 @@ def doOp(a, b, op):
         if op == '^': return a ** b
         if op == '%': return a % b
     except:
-        print('\033[31mCannot calculate\033[37m')
-        return 0
+        print('\033[31mCannot calculate\033[0m')
+        return None
 
 
 def evaluate(list, var, fun):
@@ -33,7 +33,7 @@ def evaluate(list, var, fun):
     values = []
     ops = []
     i = 0
-    error = (0, 1)
+    error = (None, 1)
 
     while i < len(list):
         if list[i].type == 'var':
@@ -99,5 +99,5 @@ def evaluate(list, var, fun):
             return error
         values.append(doOp(val1, val2, op))
     if len(values) > 1 or len(values) == 0:
-        res = None
+        return error
     return values[-1], 0
