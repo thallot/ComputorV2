@@ -133,5 +133,4 @@ class Parser():
         self.solveError(list)
         if error == "":
             error = self.checkError(strInput)
-        print(list)
         return list, error

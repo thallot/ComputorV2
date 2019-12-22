@@ -12,20 +12,15 @@ class Function():
         self.valid = self.isValidFunction()
         self.string = self.getString()
         self.otherVar = self.getOtherVar()
-        if self.otherVar:
-            self.validPolynome = False
-        else:
-            self.validPolynome = True
-            self.factor = self.getFactor()
-            if self.validPolynome:
-                self.polynome = self.getPolynome()
-                self.value = self.getValue()
-                self.string = self.getStringTwo()
-            else:
-                self.validPolynome = False
+        self.formalize = self.formalize()
+        self.validPolynome = False
+        self.factor = self.getFactor()
 
     def __str__(self):
-        return self.string.replace('1 *', '')
+        return self.formalize.replace('1 *', '')
+
+    def __repr__(self):
+        return self.formalize.replace('1 *', '')
 
     def actualValue(self, var):
         toPrint = str()
@@ -49,6 +44,48 @@ class Function():
 
     def formalize(self):
         equation = self.string.replace(' ', '')
+        for i in range(0,9):
+            equation = equation.replace(str(i) + self.var, str(i) + '*' + self.var)
+        return equation
+
+    def getFactor(self):
+        equation = self.formalize.split('=')[1]
+        calc = re.findall('(\-)?(\d+|\d+\.\d+)(\*|\^|\/)(\d+\.\d+|\d+)', equation)
+        tmp = ''
+        for toCalc in calc:
+            for token in toCalc:
+                tmp += token
+            res = eval(tmp)
+            equation = equation.replace(tmp, str(res))
+        print(equation)
+        find = re.findall('(\+|\-)?(\d+|\d+\.\d+)(\*' + self.var + ')(\^\d+)?' , equation)
+        for token in find:
+            tmp = ""
+            for element in token:
+                tmp += str(element)
+            print(tmp)
+        print('Factor', find)
+
+    def getString(self):
+        value = str()
+        for token in self.value:
+            value += " " + str(token.value)
+        return self.name + '(' + self.var + ') = ' + value
+
+    def isValidFunction(self):
+        """ Verifie que la fonction ne s'appel pas elle meme """
+        for token in self.value:
+            if token.type == 'defFunction' or token.type == 'callFunction':
+                if token.value.split('(')[0] == self.name:
+                    return False
+        return True
+
+
+
+
+
+
+
 
     def reducedForm(self, equation, op=1):
         """ Calcul les multiplication, et les autres operateur si op ==2 puis retourne la str """
@@ -82,7 +119,7 @@ class Function():
             equation = equation.replace(token, newToken)
         return equation
 
-    def getFactor(self):
+    def getFactors(self):
         """ retourne la liste des variable en liste de la forme ['2X[0]', '5X[2]'] """
         equation = self.normalizeFunction()
         find = re.findall('\d+[\.\d+]+\*' + self.var + '[\^\d]*', equation)
@@ -98,35 +135,19 @@ class Function():
         test = self.reducedForm(test)
         find = re.findall('[\-]?\d+[\.\d+]+X\|\d+\|\*[\-]?\d+[\.\d+]*X\|\d+\|', test)
         if find:
+            print('1',find)
             self.validPolynome = False
         find = re.findall('[\-|\+]?\d+[\.\d+]+X\|\d+\|', test)
         for i, token in enumerate(find):
             test = test.replace(token, '')
         test = test.split('=')[1]
         if self.var in test:
+            print('2', test)
             self.validPolynome = False
         if len(test) >= 1 and not (len(test) == 1 and (test == '+' or test == '-')):
             test = self.reducedForm(test, 2)
-
             find.append(test + 'X|0|')
         return find
-
-    def getString(self):
-        value = str()
-        for token in self.value:
-            value += " " + str(token.value)
-        return self.name + '(' + self.var + ') = ' + value
-
-    def __repr__(self):
-        return self.string
-
-    def isValidFunction(self):
-        """ Verifie que la fonction ne s'appel pas elle meme """
-        for token in self.value:
-            if token.type == 'defFunction' or token.type == 'callFunction':
-                if token.value.split('(')[0] == self.name:
-                    return False
-        return True
 
     def setFunction(self, strInput):
         strInput = strInput.split('(')
