@@ -92,7 +92,7 @@ class Complex():
             if powerI % 4 == 0:
                 return N.Number(str(self.img ** other.value + realPart))
             else:
-                PowerI = (powerI//4) * 4
+                powerI = powerI -(powerI//4) * 4
                 if powerI == 1:
                     return Complex(real = realPart, img = imgPart)
                 elif powerI == 2:

@@ -50,7 +50,7 @@ class Parser():
             if powerI % 4 == 0:
                 result = 1
             else:
-                PowerI = (powerI//4) * 4
+                powerI = powerI - (powerI//4) * 4
                 if powerI == 1:
                     result = 'i'
                 elif powerI == 2:
