@@ -87,10 +87,18 @@ class Complex():
     def __pow__(self, other):
         if isinstance(other, N.Number):
             realPart = self.real ** other.value
-            imgPart = self.img
-            if other.value % 2 == 0:
-                imgPart *= -1
-            return Complex(real = realPart, img = imgPart)
+            imgPart = self.img ** other.value
+            powerI = other.value
+            if powerI % 4 == 0:
+                return N.Number(str(self.img ** other.value + realPart))
+            else:
+                PowerI = (powerI//4) * 4
+                if powerI == 1:
+                    return Complex(real = realPart, img = imgPart)
+                elif powerI == 2:
+                    return N.Number(str(self.img ** other.value * -1 + realPart))
+                else:
+                    return Complex(real = realPart, img = -imgPart)
         if isinstance(other, Complex):
             realPart = self.real ** other.real
             imgPart = self.img ** other.img

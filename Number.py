@@ -25,7 +25,7 @@ class Number():
             return Number(self.value - other.value)
         if isinstance(other, Complex):
             realPart = self.value - other.real
-            return Complex(real = realPart, img = other.img)
+            return Complex(real = realPart, img = -other.img)
         else:
             print('\033[31mInvalid operation [-] between', self.type, 'and', other.type, '\033[0m')
 
