@@ -39,5 +39,7 @@ if __name__ == '__main__':
                     var = assignVar(ParseOne, ParseTwo, var, fun)
                 else:
                     print('\033[31mInvalid Input\033[0m')
+            else:
+                print('\033[31mInvalid Input\033[0m')
         else:
             print('\033[31mInvalid input :\033[0m Double operator =')

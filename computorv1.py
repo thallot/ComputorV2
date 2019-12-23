@@ -4,7 +4,7 @@ def calcPolynome(function):
     """ Main fonction : Donne le resultat d'un polynome """
     values, MaxDegree = function.getFactor()
     if values == None:
-        print('Cannot calculate')
+        print('\033[31mCannot calculate\033[0m')
         return None
     verbose = 0
     display = 0

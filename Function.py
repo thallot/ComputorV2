@@ -95,12 +95,12 @@ class Function():
         newEquation = str()
         state = 0
         for token in splitter:
-            if '(' in token or state == 1:
-                state = 1
+            if '(' in token or state > 0 or '[' in token:
+                state += 1
                 newEquation += token
                 continue
-            if ')' in token:
-                state = 0
+            if ')' in token or ']' in token:
+                state -= 1
                 continue
             if '^' + self.var in token:
                 newEquation += token
@@ -145,7 +145,10 @@ class Function():
     def getString(self):
         value = str()
         for token in self.value:
-            value += " " + str(token.value)
+            if token.type == 'Matrice':
+                value += " [" + str(token) + "]"
+            else:
+                value += " " + str(token)
         return self.name + '(' + self.var + ') = ' + value
 
     def isValidFunction(self):
