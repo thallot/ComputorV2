@@ -133,11 +133,14 @@ class Function():
                 continue
             else:
                 try:
-                    if not tmp[0].isnumeric():
-                        tmp = tmp[1:-1]
-                    else:
+                    if tmp[0] == '-':
+                        pass
+                    if not tmp[-1].isnumeric():
                         tmp = tmp[:-1]
-                    equation = equation.replace(tmp, str(eval(tmp)))
+                    res = eval(tmp)
+                    if res > 0:
+                        res = '+' + str(res)
+                    equation = equation.replace(tmp, res)
                 except:
                     continue
         return equation
@@ -176,7 +179,7 @@ class Function():
         MaxDegree = -1
         for token in find:
             toDelete = ''.join(map(str,token))
-            equation = equation.replace(toDelete, '')
+            equation = equation.replace(toDelete, '', 1)
             factor = token[4]
             factor = '1' if factor == '' else factor.replace('^', '')
             coef = -1 if token[0] == '-' else 1
@@ -188,8 +191,10 @@ class Function():
                 factors[factor] = float(token[i]) * coef
             tmp = ''.join(map(str,token))
         try:
-            res = eval(equation)
-            factors['0'] = res
+            equation = equation.replace('++', '+').replace('+-', '-').replace('-+', '-')
+            if equation != '':
+                res = eval(equation)
+                factors['0'] = res
         except:
             return None, None
         return factors, MaxDegree
