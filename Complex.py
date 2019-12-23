@@ -89,20 +89,12 @@ class Complex():
             realPart = self.real ** other.value
             imgPart = self.img ** other.value
             powerI = other.value
-            if powerI % 4 == 0:
-                return N.Number(str(self.img ** other.value + realPart))
+            c=complex(self.real, self.img)
+            c = c ** other.value
+            if c.imag:
+                return Complex(real = c.real, img = c.imag)
             else:
-                powerI = powerI -(powerI//4) * 4
-                if powerI == 1:
-                    return Complex(real = realPart, img = imgPart)
-                elif powerI == 2:
-                    return N.Number(str(self.img ** other.value * -1 + realPart))
-                else:
-                    return Complex(real = realPart, img = -imgPart)
-        if isinstance(other, Complex):
-            realPart = self.real ** other.real
-            imgPart = self.img ** other.img
-            return Complex(real = realPart, img = imgPart)
+                return N.Number(str(c.real))
         else:
             print('\033[31mInvalid operation [^] between', self.type, 'and', other.type, '\033[0m')
 
