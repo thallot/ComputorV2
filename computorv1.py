@@ -2,7 +2,10 @@ from Function import *
 
 def calcPolynome(function):
     """ Main fonction : Donne le resultat d'un polynome """
-    values, MaxDegree = function.getPolynome()
+    values, MaxDegree = function.getFactor()
+    if values == None:
+        print('Cannot calculate')
+        return None
     verbose = 0
     display = 0
     if '2' in values:

@@ -7,20 +7,36 @@ class Function():
     """docstring for Function."""
 
     def __init__(self, strInput, value):
+        self.finalForm = False
+        self.validPolynome = True
+        self.error = False
         self.value = value
         self.var, self.name = self.setFunction(strInput)
         self.valid = self.isValidFunction()
         self.string = self.getString()
         self.otherVar = self.getOtherVar()
         self.formalize = self.formalize()
-        self.validPolynome = False
-        self.factor = self.getFactor()
+        if self.valid:
+            self.reduced = self.reducedForm()
+            self.factor = self.getFactor()
+            if self.factor != (None,None):
+                self.finalForm = self.getFinalForm()
 
     def __str__(self):
-        return self.formalize.replace('1 *', '')
+        if self.finalForm:
+            return self.finalForm
+        elif not self.error:
+            return self.name + '(' + self.var + ')' + ' = ' + self.reduced.replace('1*', '')
+        else:
+            return self.name + '(' + self.var + ')' + ' = ' + self.formalize.replace('1*', '')
 
     def __repr__(self):
-        return self.formalize.replace('1 *', '')
+        if self.finalForm:
+            return self.finalForm
+        elif not self.error:
+            return self.name + '(' + self.var + ')' + ' = ' + self.reduced.replace('1*', '')
+        else:
+            return self.name + '(' + self.var + ')' + ' = ' + self.formalize.replace('1*', '')
 
     def actualValue(self, var):
         toPrint = str()
@@ -43,28 +59,88 @@ class Function():
         return False
 
     def formalize(self):
-        equation = self.string.replace(' ', '')
+        """ Formate les donnees :
+            supprime les espace et split la chaine par '='
+            remplace les [\d]x par [\d] * x
+            remplaces les [+|-]x par [+|-]1*x
+            """
+        equation = self.string.replace(' ', '').split('=')[1]
         for i in range(0,9):
             equation = equation.replace(str(i) + self.var, str(i) + '*' + self.var)
+        find = re.findall('(.)?(' + self.var + ')(\^\d+)?' , equation)
+        for token in find:
+            tmp = ''.join(map(str,token))
+            if tmp[0] == '+' or tmp[0] == '-' or tmp[0].isalpha():
+                equation = equation.replace(tmp, tmp.replace(self.var, '1*' + self.var))
         return equation
 
-    def getFactor(self):
-        equation = self.formalize.split('=')[1]
-        calc = re.findall('(\-)?(\d+|\d+\.\d+)(\*|\^|\/)(\d+\.\d+|\d+)', equation)
-        tmp = ''
-        for toCalc in calc:
-            for token in toCalc:
-                tmp += token
-            res = eval(tmp)
-            equation = equation.replace(tmp, str(res))
-        print(equation)
-        find = re.findall('(\+|\-)?(\d+|\d+\.\d+)(\*' + self.var + ')(\^\d+)?' , equation)
+    def reducedForm(self):
+        equation = self.formalize
+        equation = self.reducedFormOne(equation)
+        equation = self.reducedFormTwo(equation)
+        find = find = re.findall('(\((\d+\.\d+|\d+)\))' , equation)
         for token in find:
-            tmp = ""
-            for element in token:
-                tmp += str(element)
-            print(tmp)
-        print('Factor', find)
+            equation = equation.replace(token[0], token[1])
+        equation = self.reducedFormOne(equation)
+        equation = self.reducedFormTwo(equation)
+        return str(equation)
+
+
+    def reducedFormOne(self, equation):
+        """ Split la chaine par [+|-]
+            pour chaque token du split, cherche des occurence de [x][^d]?
+            supprime ces occurences puis calcul le token
+            Ajoute les occurences au resultat du token  """
+        splitter = re.split('(\+|\-)', equation)
+        newEquation = str()
+        state = 0
+        for token in splitter:
+            if '(' in token or state == 1:
+                state = 1
+                newEquation += token
+                continue
+            if ')' in token:
+                state = 0
+                continue
+            if '^' + self.var in token:
+                newEquation += token
+                self.validPolynome = False
+                continue
+            find = re.findall('(\*|\^|\/)?(' + self.var + ')(\^\d+)?' , token)
+            newVar = []
+            for var in find:
+                newVar.append(''.join(map(str,var)))
+            for var in newVar:
+                token = token.replace(var, '')
+            if token != '+' and token != '-' and token != '':
+                try:
+                    newEquation += str(eval(token.replace('^', '**'))) + ''.join(newVar)
+                except:
+                    self.error = True
+                    continue
+            else:
+                newEquation += token
+        return newEquation
+
+    def reducedFormTwo(self, equation):
+        """ Recherche des additions ou soustractions de nombres et les calculs """
+        find = re.findall('(.)?(\d+\.\d+|\d+)(\+|\-)(\d+\.\d+|\d+)(.)?' , equation)
+        for token in find:
+            tmp = ''.join(map(str,token))
+            if tmp[-1] == '*' or tmp[-1] == '^' or tmp[-1] == '/':
+                continue
+            if tmp[0] == '*' or tmp[0] == '^' or tmp[0] == '/':
+                continue
+            else:
+                try:
+                    if not tmp[0].isnumeric():
+                        tmp = tmp[1:-1]
+                    else:
+                        tmp = tmp[:-1]
+                    equation = equation.replace(tmp, str(eval(tmp)))
+                except:
+                    continue
+        return equation
 
     def getString(self):
         value = str()
@@ -80,133 +156,59 @@ class Function():
                     return False
         return True
 
-
-
-
-
-
-
-
-    def reducedForm(self, equation, op=1):
-        """ Calcul les multiplication, et les autres operateur si op ==2 puis retourne la str """
-        regexOp = '[^\^]\d+[\*]\d+'
-        if op == 2:
-            regexOp = '[^\^]\d+[\*\+\-]\d+'
-        while re.findall(regexOp, equation):
-            calc = re.findall(regexOp, equation)
-            for c in calc:
-                if c[0] == '=':
-                    c = c[0:]
-                if not c[len(c)-1].isnumeric():
-                    c = c[:len(c)-1]
-                equation = equation.replace(str(c[1:]) , str(eval(c[1:])))
-        return equation
-
-    def normalizeFunction(self):
-        """ Remplace les nb X par nb * X | les X par 1*X | les X * nb par nb * X"""
-        equation = self.string.replace(' ', '')
-        for i in range(0,9):
-            equation = equation.replace(str(i) + self.var, str(i) + '*' + self.var)
-        for i in range(0,9):
-            equation = equation.replace(self.var + '*' + str(i), str(i) + '*' + self.var)
-        find = re.findall('[\+|\-|\=]' + self.var, equation)
-        for token in find:
-            newToken = token.replace(self.var, '1*' + self.var)
-            equation = equation.replace(token, newToken)
-        find = re.findall(self.var + '[\*]' + self.var, equation)
-        for token in find:
-            newToken = token.replace(self.var + '*' + self.var, self.var + '^2')
-            equation = equation.replace(token, newToken)
-        return equation
-
-    def getFactors(self):
-        """ retourne la liste des variable en liste de la forme ['2X[0]', '5X[2]'] """
-        equation = self.normalizeFunction()
-        find = re.findall('\d+[\.\d+]+\*' + self.var + '[\^\d]*', equation)
-        test = equation
-        for i, token in enumerate(find):
-            nb = token.split('*')[0]
-            power = token.split('^')
-            if len(power) > 1:
-                power = power[1]
-            else:
-                power = 1
-            test = test.replace(token, str(nb) + 'X|' + str(power) + '|')
-        test = self.reducedForm(test)
-        find = re.findall('[\-]?\d+[\.\d+]+X\|\d+\|\*[\-]?\d+[\.\d+]*X\|\d+\|', test)
-        if find:
-            print('1',find)
-            self.validPolynome = False
-        find = re.findall('[\-|\+]?\d+[\.\d+]+X\|\d+\|', test)
-        for i, token in enumerate(find):
-            test = test.replace(token, '')
-        test = test.split('=')[1]
-        if self.var in test:
-            print('2', test)
-            self.validPolynome = False
-        if len(test) >= 1 and not (len(test) == 1 and (test == '+' or test == '-')):
-            test = self.reducedForm(test, 2)
-            find.append(test + 'X|0|')
-        return find
-
     def setFunction(self, strInput):
         strInput = strInput.split('(')
         name = strInput[0]
         var = strInput[1].replace(')', '')
         return var, name
 
-    def getPolynome(self):
-        """ Genere un dict avec en cle le degree et en value la valeur du polynome"""
-        list = self.factor
-        equation = str()
-        element = {}
-        maxDegree = - 1
-        for token in list:
-            tmp = token.split('X')
-            tmp[0] = tmp[0].replace('+', '')
-            tmp[1] = tmp[1].replace('|', '')
-            if re.match('\-?\d+[\.\d+]?', tmp[0]):
-                if tmp[1] in element:
-                    element[tmp[1]] += float(tmp[0])
-                else:
-                    element[tmp[1]] = float(tmp[0])
-            if maxDegree < int(tmp[1]):
-                maxDegree = int(tmp[1])
-        return element, maxDegree
+    def getFactor(self):
+        factors = {}
+        equation = self.reduced
+        if self.error:
+            return None, None
+        find = re.findall('(\+|\-)?(\d+\.\d+|\d+)(\*)(' + self.var + ')(\^\d+)?', equation)
+        if len(find) == 0:
+            return None, None
+        MaxDegree = -1
+        for token in find:
+            toDelete = ''.join(map(str,token))
+            equation = equation.replace(toDelete, '')
+            factor = token[4]
+            factor = '1' if factor == '' else factor.replace('^', '')
+            coef = -1 if token[0] == '-' else 1
+            i = 1 if token[0] == '+' or token[0] == '-' or token[0] == '' else 0
+            MaxDegree = int(factor) if MaxDegree < int(factor) else MaxDegree
+            if factor in factors.keys():
+                factors[factor] += float(token[i]) * coef
+            else:
+                factors[factor] = float(token[i]) * coef
+            tmp = ''.join(map(str,token))
+        try:
+            res = eval(equation)
+            factors['0'] = res
+        except:
+            return None, None
+        return factors, MaxDegree
 
-    def getStringTwo(self):
+    def getFinalForm(self):
+        factor, MaxDegree = self.factor
         equation = str()
-        for token in self.value:
-            equation += ' ' + str(token)
+        for token in factor:
+            if factor[token] % 1 == 0:
+                factor[token] = int(factor[token])
+            if factor[token] > 0:
+                factor[token] = '+' + str(factor[token])
+            equation += ' ' + str(factor[token]) + self.var + '^' +token
+        equation = equation.strip().replace(self.var + '^0', '').replace('^1', '')
         equation = self.name + '(' + self.var + ') = ' + equation
         return equation
 
-    def getValue(self):
-        if self.otherVar:
-            return self.value
-        element, maxDegree = self.polynome
-        degree = sorted(element)
-        equation = str()
-        cpt = 0
-        for i in degree:
-            if element[i] == 0:
-                continue
-            elif element[i] > 0 and cpt > 0:
-                element[i] = '+' + str(element[i])
-            if int(i) > 1:
-                equation += str(element[i]) + '*' + self.var + '^' + str(i)
-            elif int(i) == 1:
-                equation += str(element[i]) + '*' + self.var
-            elif int(i) == 0:
-                equation += str(element[i])
-            cpt += 1
-        Parsing = Parser(equation)
-        return Parsing.list
-
     def calc(self, nb, var, fun):
-        value = str()
-        for token in self.value:
-            value += str(token.value)
+        if self.error:
+            value = self.formalize
+        else:
+            value = self.reduced
         value = value.replace(self.var, nb)
         Parsing = Parser(value)
         if len(Parsing.list) == 0 or Parsing.error != "":
